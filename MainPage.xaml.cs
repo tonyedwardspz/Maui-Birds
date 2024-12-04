@@ -18,6 +18,11 @@ public partial class MainPage : ContentPage
 		var inputs = MidiManager.AvailableInputDevices;
 		Debug.WriteLine(inputs.Count);
 		await MidiManager.EnsureInputReady("APC Key 25");
+
+		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn += (note, velocity) =>
+		{
+			Debug.WriteLine($"Note from main page: {note}, Velocity: {velocity}");
+		};
 	}
 
 	private void OnCounterClicked(object sender, EventArgs e)
