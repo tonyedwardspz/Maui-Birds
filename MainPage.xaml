@@ -1,36 +1,93 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Maui_Birds.MainPage">
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="Maui_Birds.MainPage"
+             Title="Midi Birds - Meet the flock">
 
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="185"
+
+        <Grid ColumnDefinitions="500, *, 300"
+            Padding="20">
+            
+            <Image 
+                Source="{Binding CurrentBirdImage}"
                 Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a race car number eight" />
+                HeightRequest="500"
+                VerticalOptions="Start"
+                HorizontalOptions="Start"
+                Margin="0, 100, 0, 0"
+                
+                Grid.Column="0"
+                />
+                
+            <VerticalStackLayout 
+                Grid.Column="1" 
+                HorizontalOptions="Start"
+                Margin="20, 100, 0, 0"
+                
+                >
+                <Label
+                    Text="{Binding CurrentBirdName}"
+                    FontSize="30"
+                    Grid.Column="1"
+                    Margin="0, 0, 0, 20"
+                    />
 
-            <Label
-                Text="Hello, World!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+                <Label
+                    x:Name="BirdSightingsLabel"
+                    Text="{Binding CurrentBirdSightings, StringFormat='Sightings:   {0}'}"
+                    FontSize="24"
+                    Grid.Column="1"
+                    Margin="0, 0, 0, 40"
+                    IsVisible="False"
+                    />
 
-            <Label
-                Text="Welcome to Midi Birds"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+                <Label
+                    x:Name="BirdImageCreditLabel"
+                    Text="{Binding ImageCredit, StringFormat='Image Credit:   {0}'}"
+                    FontSize="24"
+                    Grid.Column="1"
+                    Margin="0, 0, 0, 10"
+                    IsVisible="False"
+                    />
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
-        </VerticalStackLayout>
+                <Label
+                    x:Name="BirdSongCreditLabel"
+                    Text="{Binding SongCredit, StringFormat='Song Credit:   {0}'}"
+                    FontSize="24"
+                    Grid.Column="1"
+                    Margin="0, 0, 0, 10"
+                    IsVisible="False"
+                    />
+
+            </VerticalStackLayout>
+            
+
+            <CollectionView
+                ItemsSource="{Binding BirdImages}"
+                ItemsLayout="VerticalGrid, 4"
+
+                Grid.Column="2"
+                >
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding .}" HeightRequest="100" WidthRequest="100" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                
+            </CollectionView>
+
+            <toolkit:MediaElement
+                x:Name="BirdSongPlayer"
+                ShouldShowPlaybackControls="False"
+                HeightRequest="1"
+                WidthRequest="1"
+                Volume="1"/>
+
+        </Grid>
+
     </ScrollView>
 
 </ContentPage>

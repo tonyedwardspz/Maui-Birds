@@ -10,7 +10,6 @@ public static class ConfigHelper
 
         var contents = reader.ReadToEnd();
 
-
         var config = JsonSerializer.Deserialize<Config>(contents);
         return config;
     }

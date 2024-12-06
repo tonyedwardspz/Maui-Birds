@@ -116,32 +116,10 @@
 	  <None Remove="Resources\Images\wood_pigeon.jpg" />
 	  <None Remove="Resources\Images\wren.jpg" />
 	  <None Remove="Resources\Raw\data.json" />
+	  <None Remove="Models\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <BundleResource Include="Resources\Raw\appsettings.json" />
-	  <BundleResource Include="Resources\Raw\blackbird.mp3" />
-	  <BundleResource Include="Resources\Raw\blue_tit.mp3" />
-	  <BundleResource Include="Resources\Raw\buzzard.mp3" />
-	  <BundleResource Include="Resources\Raw\chaffinch.mp3" />
-	  <BundleResource Include="Resources\Raw\coal_tit.mp3" />
-	  <BundleResource Include="Resources\Raw\collared_dove.mp3" />
-	  <BundleResource Include="Resources\Raw\dunnock.mp3" />
-	  <BundleResource Include="Resources\Raw\goldfinch.mp3" />
-	  <BundleResource Include="Resources\Raw\gray_heron.mp3" />
-	  <BundleResource Include="Resources\Raw\great_tit.mp3" />
-	  <BundleResource Include="Resources\Raw\herring_gull.mp3" />
-	  <BundleResource Include="Resources\Raw\house_sparrow.mp3" />
-	  <BundleResource Include="Resources\Raw\jackdaw.mp3" />
-	  <BundleResource Include="Resources\Raw\long_tailed_tit.mp3" />
-	  <BundleResource Include="Resources\Raw\placeholder.wav" />
-	  <BundleResource Include="Resources\Raw\raven.mp3" />
-	  <BundleResource Include="Resources\Raw\robin.mp3" />
-	  <BundleResource Include="Resources\Raw\rook.mp3" />
-	  <BundleResource Include="Resources\Raw\ruddy_turnstone.mp3" />
-	  <BundleResource Include="Resources\Raw\starling.mp3" />
-	  <BundleResource Include="Resources\Raw\tawny_owl.mp3" />
-	  <BundleResource Include="Resources\Raw\wood_pigeon.mp3" />
-	  <BundleResource Include="Resources\Raw\wren.mp3" />
 	  <BundleResource Include="Resources\Images\blackbird.jpg" />
 	  <BundleResource Include="Resources\Images\blue_tit.jpg" />
 	  <BundleResource Include="Resources\Images\buzzard.jpg" />
@@ -167,9 +145,9 @@
 	  <BundleResource Include="Resources\Images\tawny_owl.jpg" />
 	  <BundleResource Include="Resources\Images\wood_pigeon.jpg" />
 	  <BundleResource Include="Resources\Images\wren.jpg" />
-	  <BundleResource Include="Resources\Raw\data.json" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Helpers\" />
+	  <Folder Include="Models\" />
 	</ItemGroup>
 </Project>
