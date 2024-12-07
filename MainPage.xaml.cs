@@ -135,11 +135,18 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 				Debug.WriteLine($"Error showing labels: {ex.Message}");
 			}
 		}
-		CurrentBirdImage = $"{bird.CommonName.Replace(" ", "_").ToLower()}.jpg";
-		CurrentBirdName = bird.CommonName;
-		ImageCredit = bird.ImageCredit;
-		SongCredit = bird.SongCredit;
-		CurrentBirdSightings = bird.Sightings.ToString();
+
+		try
+		{
+			CurrentBirdImage = $"{bird.CommonName.Replace(" ", "_").ToLower()}.jpg";
+			CurrentBirdName = bird.CommonName;
+			ImageCredit = bird.ImageCredit;
+			SongCredit = bird.SongCredit;
+			CurrentBirdSightings = bird.Sightings.ToString();
+		} catch (Exception e)
+		{
+
+		}
 
 		try
 		{
