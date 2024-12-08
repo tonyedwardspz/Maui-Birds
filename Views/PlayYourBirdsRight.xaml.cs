@@ -33,7 +33,6 @@ public partial class PlayYourBirdsRight : ContentPage
 		BindingContext = this;
 		LoadBirdsAsync();
 		InitializeMidiAsync();
-
 	}
 
 	private async Task LoadBirdsAsync()
@@ -100,13 +99,24 @@ public partial class PlayYourBirdsRight : ContentPage
 
 		var bird = Birds.FirstOrDefault(b => b.Id == note);
 		UpdateGameBoard(bird);
-		
-		MainThread.BeginInvokeOnMainThread(() =>
-		{
-			BirdSongPlayer.Source = MediaSource.FromResource($"{bird.CommonName.Replace(" ", "_").ToLower()}.mp3");
-			BirdSongPlayer.Play();
-		});
-	}
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            string filename = $"{bird.CommonName.Replace(" ", "_").ToLower()}.mp3";
+
+            if (FileSystem.AppPackageFileExistsAsync(filename).Result)
+            {
+                MediaSource source = MediaSource.FromResource(filename);
+                BirdSongPlayer.Source = source;
+            }
+            else
+            {
+                MediaSource source = MediaSource.FromResource("placeholder.wav");
+                BirdSongPlayer.Source = source;
+            }
+            BirdSongPlayer.Play();
+        });
+    }
 
 	private void HandleNoteOff(int note)
 	{

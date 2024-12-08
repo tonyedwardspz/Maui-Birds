@@ -150,12 +150,23 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 		try
 		{
-			MainThread.BeginInvokeOnMainThread(() =>
-			{
-				BirdSongPlayer.Source = MediaSource.FromResource($"{bird.CommonName.Replace(" ", "_").ToLower()}.mp3");
-				BirdSongPlayer.Play();
-			});
-		}
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+				string filename = $"{bird.CommonName.Replace(" ", "_").ToLower()}.mp3";
+				var exists = FileSystem.AppPackageFileExistsAsync(filename).Result;
+				
+				if (exists)
+				{
+                    MediaSource source = MediaSource.FromResource(filename);
+                    BirdSongPlayer.Source = source;
+                } else
+				{
+					MediaSource source = MediaSource.FromResource("placeholder.wav");
+                    BirdSongPlayer.Source = source;
+                }
+                BirdSongPlayer.Play();
+            });
+        }
 		catch (Exception e)
 		{
 			Debug.WriteLine(e.Message);
