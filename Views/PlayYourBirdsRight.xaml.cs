@@ -184,6 +184,14 @@ public partial class PlayYourBirdsRight : ContentPage
 			var randomBird = Birds.Where(b => !TeamABirds.Contains(b) && !TeamBBirds.Contains(b)).OrderBy(b => b.Id).First();
             UpdateGameBoard(randomBird);
         }
+
+		var NotCurrentTeam = CurrentTeam == "A" ? "B" : "A";
+
+		MainThread.BeginInvokeOnMainThread(() =>
+		{
+			this.FindByName<Label>("Team" + CurrentTeam + "Label").TextDecorations = TextDecorations.Underline;
+			this.FindByName<Label>("Team" + NotCurrentTeam + "Label").TextDecorations = TextDecorations.None;
+		});
 	}
 
 	private void UpdateGameBoard(Bird? bird)
@@ -220,12 +228,24 @@ public partial class PlayYourBirdsRight : ContentPage
             new int[] {32, 35}
         };
 
+		string team = "C";
+
         foreach (var range in teamARanges)
         {
-            if (note >= range[0] && note <= range[1]) return "A";
+            if (note >= range[0] && note <= range[1]) team = "A";
         }
 
-        Debug.WriteLine("Team B");
-        return "B";
+		if (team != "A")
+			team = "B";
+
+		string TeamLabel = $"Team{team}Label";
+
+		MainThread.BeginInvokeOnMainThread(() =>
+		{
+			this.FindByName<Label>(TeamLabel).TextDecorations = TextDecorations.Underline;
+		});
+
+        Debug.WriteLine(team);
+        return team;
     }
 }
