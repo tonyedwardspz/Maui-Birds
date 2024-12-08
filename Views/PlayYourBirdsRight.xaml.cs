@@ -22,6 +22,10 @@ public partial class PlayYourBirdsRight : ContentPage
 	}
 	public ObservableCollection<Bird> TeamABirds { get; set; } = new ObservableCollection<Bird>();
 	public ObservableCollection<Bird> TeamBBirds { get; set; } = new ObservableCollection<Bird>();
+	private bool teamSelected = false;
+	private bool HasSelected = false;
+	private bool GuessedHigher = false;
+	public string CurrentTeam { get; set; } = "A";
 
 	public PlayYourBirdsRight()
 	{
@@ -31,13 +35,6 @@ public partial class PlayYourBirdsRight : ContentPage
 		InitializeMidiAsync();
 
 	}
-
-	private bool teamSelected = false;
-	private bool HasSelected = false;
-
-	private bool GuessedHigher = false;
-
-	public string CurrentTeam { get; set; } = "A";
 
 	private async Task LoadBirdsAsync()
 	{
@@ -78,27 +75,19 @@ public partial class PlayYourBirdsRight : ContentPage
 		// Bird selected
 		if ((note >= 41 && note <= 72) && !HasSelected){
 			Debug.WriteLine("Bird Selected");
-			//HasSelected = true;
-
-			// If current team bird collection only has a single item
-			if (CurrentTeam == "A" && TeamABirds.Count == 1 || CurrentTeam == "B" && TeamBBirds.Count == 1){
-				
-			} else {
-				//HasSelected = false;
-			}
 		} else if (note >= 41 && note <= 72){
-			Debug.WriteLine("Guess in progress"); ///
+			Debug.WriteLine("Guess in progress");
 			return;
 		}
 
 		// Higher guess
-		if ((note >= 32 && note <= 39) && HasSelected){
+		if ((note >= 32 && note <= 39)){
 			Debug.WriteLine("Higher Guess");
 			GuessedHigher = true;
 		}
 
 		// Lower guess
-		if ((note >= 0 && note <= 7) && HasSelected){
+		if ((note >= 0 && note <= 7)){ 
 			Debug.WriteLine("Lower Guess");
 			GuessedHigher = false;
 		}
@@ -106,13 +95,8 @@ public partial class PlayYourBirdsRight : ContentPage
 		// Reveal answer
 		if (note == 93){
 			Debug.WriteLine("Reveal Answer");
-			//HasSelected = false;
 			CalculateAnswer();
 		}
-
-
-		//HasSelected = true;
-
 
 		var bird = Birds.FirstOrDefault(b => b.Id == note);
 		UpdateGameBoard(bird);
@@ -136,10 +120,8 @@ public partial class PlayYourBirdsRight : ContentPage
 	private void CalculateAnswer()
 	{
         var birds = CurrentTeam == "A" ? TeamABirds : TeamBBirds;
-
 		var currentBird = birds.Last();
 		var lastBird = birds.ElementAt(birds.Count - 2);
-
 		var answer = currentBird.Sightings > lastBird.Sightings;
 
         if (currentBird.Sightings == lastBird.Sightings)
@@ -155,8 +137,8 @@ public partial class PlayYourBirdsRight : ContentPage
         else
         {
 			Debug.WriteLine("Incorrect Guess");
-			//HasSelected = false;
 			SwapTeams();
+			return;
 		}
 
 		int index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
@@ -182,23 +164,26 @@ public partial class PlayYourBirdsRight : ContentPage
 			this.FindByName<Label>(previousBirdBox + "SightingsLabel").Text = "";
 		});
 
-
 		CurrentTeam = CurrentTeam == "A" ? "B" : "A";
-	}
 
+		// if the new team has no birds, add a random bird to it that hasn't already been selected
+		if (CurrentTeam == "A" && TeamABirds.Count == 0){
+			var randomBird = Birds.Where(b => !TeamABirds.Contains(b) && !TeamBBirds.Contains(b)).OrderBy(b => b.Id).First();
+            UpdateGameBoard(randomBird);
+        } else if (CurrentTeam == "B" && TeamBBirds.Count == 0){
+			var randomBird = Birds.Where(b => !TeamABirds.Contains(b) && !TeamBBirds.Contains(b)).OrderBy(b => b.Id).First();
+            UpdateGameBoard(randomBird);
+        }
+	}
 
 	private void UpdateGameBoard(Bird? bird)
 	{
 		if (bird != null)
 		{
 			int index = CurrentTeam == "A" ? TeamABirds.Count : TeamBBirds.Count;
-			if (index < 0)
-			{
-				index = 0;
-				//HasSelected = false;
-			}
+			if (index < 0) index = 0;
+			
 			string birdBox = $"Team{CurrentTeam}Bird{index}";
-			string previousBirdBox = $"Team{CurrentTeam}Bird{index - 1}";
 
 			if (CurrentTeam == "A")
 				TeamABirds.Add(bird);
@@ -213,15 +198,11 @@ public partial class PlayYourBirdsRight : ContentPage
 				if (index <= 0)
 					this.FindByName<Label>(birdBox + "SightingsLabel").Text = bird.Sightings.ToString();
 			});
-
-			
 		}
 	}
 
-
 	private string SelectStartingTeam(int note)
     {
-        // Define ranges for Team A
         int[][] teamARanges = new int[][]
         {
             new int[] {0, 3}, new int[] {8, 11},
@@ -229,14 +210,9 @@ public partial class PlayYourBirdsRight : ContentPage
             new int[] {32, 35}
         };
 
-        // Check if the note number falls into any of the Team A ranges
         foreach (var range in teamARanges)
         {
-            if (note >= range[0] && note <= range[1])
-            {
-				Debug.WriteLine("Team A");
-                return "A";
-            }
+            if (note >= range[0] && note <= range[1]) return "A";
         }
 
         Debug.WriteLine("Team B");
