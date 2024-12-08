@@ -9,14 +9,16 @@
     Title="Maui_Birds">
 
     <ShellContent
+        Title="Play Your Birds Right"
+        ContentTemplate="{DataTemplate views:PlayYourBirdsRight}"
+        Route="PlayYourBirdsRight" />
+
+    <ShellContent
         Title="Flock Catcher"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
-    <ShellContent
-        Title="Play Your Birds Right"
-        ContentTemplate="{DataTemplate views:PlayYourBirdsRight}"
-        Route="PlayYourBirdsRight" />
+    
 
 </Shell>
 

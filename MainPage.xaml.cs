@@ -170,4 +170,11 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 			BirdSongPlayer.Stop();
 		});
 	}
+
+	// when the page is disposed, remove the midi event handlers
+	protected override void OnDisappearing()
+	{
+		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn -= HandleNoteOn;
+		MidiManager.ActiveInputDevices["APC Key 25"].NoteOff -= HandleNoteOff;
+	}
 }

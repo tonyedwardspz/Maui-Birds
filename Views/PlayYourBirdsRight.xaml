@@ -5,6 +5,7 @@
              xmlns:local="clr-namespace:Maui_Birds"
              xmlns:models="clr-namespace:Maui_Birds.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Shell.NavBarIsVisible="True"
              Title="Play Your Birds Right">
 
     <Grid RowDefinitions="100, *, 100, *"
@@ -13,71 +14,74 @@
 
         <VerticalStackLayout Grid.Row="1" Grid.Column="0" Margin="10">
             <Label x:Name="TeamABird0NameLabel" />
+            <Image x:Name="TeamABird0Image" />
             <Label x:Name="TeamABird0SightingsLabel" />
-            <Image x:Name="TeamABird0Image"  />
         </VerticalStackLayout>
-        
+
+
         <VerticalStackLayout Grid.Row="1" Grid.Column="1" Margin="10">
             <Label x:Name="TeamABird1NameLabel" />
+            <Image x:Name="TeamABird1Image" />
             <Label x:Name="TeamABird1SightingsLabel" />
-            <Image x:Name="TeamABird1Image"  />
         </VerticalStackLayout>
 
 
         <VerticalStackLayout Grid.Row="1" Grid.Column="2" Margin="10">
             <Label x:Name="TeamABird2NameLabel" />
+            <Image x:Name="TeamABird2Image" />
             <Label x:Name="TeamABird2SightingsLabel" />
-            <Image x:Name="TeamABird2Image"  />
         </VerticalStackLayout>
         
         
         <VerticalStackLayout Grid.Row="1" Grid.Column="3" Margin="10">
             <Label x:Name="TeamABird3NameLabel" />
+            <Image x:Name="TeamABird3Image" />
             <Label x:Name="TeamABird3SightingsLabel" />
-            <Image x:Name="TeamABird3Image"  />
         </VerticalStackLayout>
         
         
         <VerticalStackLayout Grid.Row="1" Grid.Column="4" Margin="10">
             <Label x:Name="TeamABird4NameLabel" />
+            <Image x:Name="TeamABird4Image" />
             <Label x:Name="TeamABird4SightingsLabel" />
-            <Image x:Name="TeamABird4Image"  />
         </VerticalStackLayout>
 
         <Label Text="Team B" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" />
 
         <VerticalStackLayout Grid.Row="3" Grid.Column="0" Margin="10">
             <Label x:Name="TeamBBird0NameLabel" />
+            <Image x:Name="TeamBBird0Image" />
             <Label x:Name="TeamBBird0SightingsLabel" />
-            <Image x:Name="TeamBBird0Image"  />
         </VerticalStackLayout>
         
         
         <VerticalStackLayout Grid.Row="3" Grid.Column="1" Margin="10">
             <Label x:Name="TeamBBird1NameLabel" />
+            <Image x:Name="TeamBBird1Image" />
             <Label x:Name="TeamBBird1SightingsLabel" />
-            <Image x:Name="TeamBBird1Image"  />
         </VerticalStackLayout>
         
+
         <VerticalStackLayout Grid.Row="3" Grid.Column="2" Margin="10">
             <Label x:Name="TeamBBird2NameLabel" />
+            <Image x:Name="TeamBBird2Image" />
             <Label x:Name="TeamBBird2SightingsLabel" />
-            <Image x:Name="TeamBBird2Image"  />
         </VerticalStackLayout>
         
         
         <VerticalStackLayout Grid.Row="3" Grid.Column="3" Margin="10">
             <Label x:Name="TeamBBird3NameLabel" />
+            <Image x:Name="TeamBBird3Image" />
             <Label x:Name="TeamBBird3SightingsLabel" />
-            <Image x:Name="TeamBBird3Image"  />
         </VerticalStackLayout>
         
         
         <VerticalStackLayout Grid.Row="3" Grid.Column="4" Margin="10">
             <Label x:Name="TeamBBird4NameLabel" />
+            <Image x:Name="TeamBBird4Image" />
             <Label x:Name="TeamBBird4SightingsLabel" />
-            <Image x:Name="TeamBBird4Image"  />
         </VerticalStackLayout>
+
 
         <toolkit:MediaElement
                 x:Name="BirdSongPlayer"

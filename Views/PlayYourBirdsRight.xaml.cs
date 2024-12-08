@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Maui.Views;
+using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
 using Maui_Birds.Midi;
 using Maui_Birds.Models;
@@ -63,37 +64,54 @@ public partial class PlayYourBirdsRight : ContentPage
 
 			var random = new Random();
 			var randomBird = Birds[random.Next(Birds.Count)];
-			if (CurrentTeam == "A")
-				TeamABirds.Add(randomBird);
-			else
-				TeamBBirds.Add(randomBird);
-			UpdateGameBoard(randomBird, true);
+			UpdateGameBoard(randomBird);
+			return;
+		}
+
+		// Bird already selected and theres not a guess in progress
+		if ((TeamABirds.Any(b => b.Id == note) || TeamBBirds.Any(b => b.Id == note)) && !HasSelected){
+			Debug.WriteLine("Bird Already Selected");
+			MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage("This bird has already been selected")));
 			return;
 		}
 
 		// Bird selected
 		if ((note >= 41 && note <= 72) && !HasSelected){
 			Debug.WriteLine("Bird Selected");
-			HasSelected = true;
+			//HasSelected = true;
+
+			// If current team bird collection only has a single item
+			if (CurrentTeam == "A" && TeamABirds.Count == 1 || CurrentTeam == "B" && TeamBBirds.Count == 1){
+				
+			} else {
+				//HasSelected = false;
+			}
+		} else if (note >= 41 && note <= 72){
+			Debug.WriteLine("Guess in progress"); ///
+			return;
 		}
 
 		// Higher guess
 		if ((note >= 32 && note <= 39) && HasSelected){
 			Debug.WriteLine("Higher Guess");
+			GuessedHigher = true;
 		}
 
 		// Lower guess
 		if ((note >= 0 && note <= 7) && HasSelected){
 			Debug.WriteLine("Lower Guess");
+			GuessedHigher = false;
 		}
 
 		// Reveal answer
 		if (note == 93){
 			Debug.WriteLine("Reveal Answer");
-			HasSelected = false;
+			//HasSelected = false;
 			CalculateAnswer();
 		}
 
+
+		//HasSelected = true;
 
 
 		var bird = Birds.FirstOrDefault(b => b.Id == note);
@@ -113,41 +131,72 @@ public partial class PlayYourBirdsRight : ContentPage
 		{
 			BirdSongPlayer.Stop();
 		});
-
-		// // Bird selected, key released
-		// if ((note >= 41 && note <= 72) && !HasSelected){
-
-		// }
 	}
 
 	private void CalculateAnswer()
 	{
         var birds = CurrentTeam == "A" ? TeamABirds : TeamBBirds;
 
-		var lastBird = birds.Last();
-		var previousBird = birds.ElementAt(birds.Count - 2);
+		var currentBird = birds.Last();
+		var lastBird = birds.ElementAt(birds.Count - 2);
 
-		if (lastBird.Sightings > previousBird.Sightings){
-			Debug.WriteLine("Correct Guess");
-		}
-		else if (lastBird.Sightings == previousBird.Sightings){
-			Debug.WriteLine("Nothing for a pair");
-		}
-		else{
+		var answer = currentBird.Sightings > lastBird.Sightings;
+
+        if (currentBird.Sightings == lastBird.Sightings)
+        {
+            Debug.WriteLine("Nothing for a pair");
+            MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage("Nothing for a pair.")));
+            SwapTeams();
+        }
+		else if (answer == GuessedHigher)
+        {
+            Debug.WriteLine("Correct Guess");
+        }
+        else
+        {
 			Debug.WriteLine("Incorrect Guess");
+			//HasSelected = false;
+			SwapTeams();
 		}
 
 		int index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
-		string previousBirdBox = $"Team{CurrentTeam}Bird{index - 1}";
-        MainThread.BeginInvokeOnMainThread(() => this.FindByName<Label>(previousBirdBox + "SightingsLabel").Text = lastBird.Sightings.ToString());
+		string previousBirdBox = $"Team{CurrentTeam}Bird{index}";
+        MainThread.BeginInvokeOnMainThread(() => this.FindByName<Label>(previousBirdBox + "SightingsLabel").Text = currentBird.Sightings.ToString());
+		HasSelected = false;
+	}
+
+	private void SwapTeams(){
+		int index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
+		string previousBirdBox = $"Team{CurrentTeam}Bird{index}";
+
+		// remove the last item from the current teams bird collection
+		if (CurrentTeam == "A")
+			TeamABirds.RemoveAt(index);
+		else
+			TeamBBirds.RemoveAt(index);
+
+		MainThread.BeginInvokeOnMainThread(() =>
+		{
+			this.FindByName<Image>(previousBirdBox + "Image").Source = "";
+			this.FindByName<Label>(previousBirdBox + "NameLabel").Text = "";
+			this.FindByName<Label>(previousBirdBox + "SightingsLabel").Text = "";
+		});
+
+
+		CurrentTeam = CurrentTeam == "A" ? "B" : "A";
 	}
 
 
-	private void UpdateGameBoard(Bird? bird, bool GameStart = false)
+	private void UpdateGameBoard(Bird? bird)
 	{
 		if (bird != null)
 		{
-			int index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
+			int index = CurrentTeam == "A" ? TeamABirds.Count : TeamBBirds.Count;
+			if (index < 0)
+			{
+				index = 0;
+				//HasSelected = false;
+			}
 			string birdBox = $"Team{CurrentTeam}Bird{index}";
 			string previousBirdBox = $"Team{CurrentTeam}Bird{index - 1}";
 
@@ -164,6 +213,8 @@ public partial class PlayYourBirdsRight : ContentPage
 				if (index <= 0)
 					this.FindByName<Label>(birdBox + "SightingsLabel").Text = bird.Sightings.ToString();
 			});
+
+			
 		}
 	}
 
