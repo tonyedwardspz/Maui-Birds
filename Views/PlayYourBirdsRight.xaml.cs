@@ -27,6 +27,8 @@ public partial class PlayYourBirdsRight : ContentPage
 	private bool GuessedHigher = false;
 	public string CurrentTeam { get; set; } = "A";
 
+
+
 	public PlayYourBirdsRight()
 	{
 		InitializeComponent();
@@ -74,6 +76,7 @@ public partial class PlayYourBirdsRight : ContentPage
 		// Bird selected
 		if ((note >= 41 && note <= 72) && !HasSelected){
 			Debug.WriteLine("Bird Selected");
+			HasSelected = true;
 		} else if (note >= 41 && note <= 72){
 			Debug.WriteLine("Guess in progress");
 			return;
@@ -147,6 +150,7 @@ public partial class PlayYourBirdsRight : ContentPage
         else
         {
 			Debug.WriteLine("Incorrect Guess");
+			HasSelected = false;
 			SwapTeams();
 			return;
 		}

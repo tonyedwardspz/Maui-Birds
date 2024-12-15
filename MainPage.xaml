@@ -7,16 +7,16 @@
 
     <ScrollView>
 
-        <Grid ColumnDefinitions="500, *, 300"
+        <Grid ColumnDefinitions="2*, *, *"
             Padding="20">
             
             <Image 
                 Source="{Binding CurrentBirdImage}"
                 Aspect="AspectFit"
-                HeightRequest="500"
+
                 VerticalOptions="Start"
-                HorizontalOptions="Start"
-                Margin="0, 100, 0, 0"
+                HorizontalOptions="Center"
+                Margin="0, 200, 0, 0"
                 
                 Grid.Column="0"
                 />
@@ -24,12 +24,13 @@
             <VerticalStackLayout 
                 Grid.Column="1" 
                 HorizontalOptions="Start"
-                Margin="20, 100, 0, 0"
+                VerticalOptions="Start"
+                Margin="20, 200, 0, 0"
                 
                 >
                 <Label
                     Text="{Binding CurrentBirdName}"
-                    FontSize="30"
+                    FontSize="40"
                     Grid.Column="1"
                     Margin="0, 0, 0, 20"
                     />
@@ -37,9 +38,9 @@
                 <Label
                     x:Name="BirdSightingsLabel"
                     Text="{Binding CurrentBirdSightings, StringFormat='Sightings:   {0}'}"
-                    FontSize="24"
+                    FontSize="30"
                     Grid.Column="1"
-                    Margin="0, 0, 0, 40"
+                    Margin="0, 0, 0, 80"
                     IsVisible="False"
                     />
 
@@ -67,13 +68,12 @@
             <CollectionView
                 ItemsSource="{Binding BirdImages}"
                 ItemsLayout="VerticalGrid, 4"
-
                 Grid.Column="2"
                 >
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding .}" HeightRequest="100" WidthRequest="100" />
+                        <Image Source="{Binding .}" HeightRequest="100" WidthRequest="100" Margin="0" />
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
                 
