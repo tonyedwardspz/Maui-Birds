@@ -6,19 +6,22 @@
     xmlns:local="clr-namespace:Maui_Birds"
     xmlns:views="clr-namespace:Maui_Birds.Views"
     Shell.FlyoutBehavior="Flyout"
-    Title="Maui_Birds">
-
-    <ShellContent
-        Title="Play Your Birds Right"
-        ContentTemplate="{DataTemplate views:PlayYourBirdsRight}"
-        Route="PlayYourBirdsRight" />
+    Title="Maui Birds">
 
     <ShellContent
         Title="Flock Catcher"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
-    
+    <ShellContent
+        Title="Flock Fortunes"
+        ContentTemplate="{DataTemplate views:FlockFortunes}"
+        Route="FlockFortunes" />
+
+    <ShellContent
+        Title="Play Your Birds Right"
+        ContentTemplate="{DataTemplate views:PlayYourBirdsRight}"
+        Route="PlayYourBirdsRight" />
 
 </Shell>
 
