@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Maui_Birds.MainPage"
+             Shell.NavBarIsVisible="True"
              Title="Midi Birds - Meet the flock">
 
     <ScrollView>

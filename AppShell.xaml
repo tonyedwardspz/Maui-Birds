@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Maui_Birds"
     xmlns:views="clr-namespace:Maui_Birds.Views"
     Shell.FlyoutBehavior="Flyout"
+    Shell.FlyoutHeaderBehavior="Fixed"
     Title="Maui Birds">
 
     <ShellContent

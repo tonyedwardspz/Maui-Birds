@@ -2,6 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Maui_Birds.Views.FlockFortunes"
+             xmlns:models="clr-namespace:Maui_Birds.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Shell.NavBarIsVisible="True"
              Title="Flock Fortunes">
     <Grid
         ColumnDefinitions="*,*,*"
@@ -17,21 +20,21 @@
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="TeamAWrong1"
             Grid.Column="0" 
             Grid.Row="2"
-            Text="X"
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="TeamAWrong2"
             Grid.Column="0" 
             Grid.Row="3"
-            Text="X"
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="TeamAWrong3"
             Grid.Column="0" 
             Grid.Row="4"
-            Text="X"
             HorizontalOptions="Center" />
 
 
@@ -86,21 +89,21 @@
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="TeamBWrong1"
             Grid.Column="2" 
             Grid.Row="2"
-            Text="X"
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="TeamBWrong2"
             Grid.Column="2" 
             Grid.Row="3"
-            Text="X"
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="TeamBWrong3"
             Grid.Column="2" 
             Grid.Row="4"
-            Text="X"
             HorizontalOptions="Center" />
 
 
@@ -109,7 +112,12 @@
 
 
 
-        
+        <toolkit:MediaElement
+            x:Name="BirdSongPlayer"
+            ShouldShowPlaybackControls="False"
+            HeightRequest="1"
+            WidthRequest="1"
+            Volume="1"/>
 
 
 
