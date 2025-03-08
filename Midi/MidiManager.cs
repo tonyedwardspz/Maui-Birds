@@ -14,6 +14,7 @@ public static class MidiManager
     public static List<IMidiPortDetails> AvailableOutputDevices => AccessManager.Outputs.ToList();
 
     public static Dictionary<string, MidiInputDevice> ActiveInputDevices { get; private set; } = new Dictionary<string, MidiInputDevice>();
+    public static Dictionary<string, MidiOutputDevice> ActiveOutputDevices { get; private set; } = new Dictionary<string, MidiOutputDevice>();
 
     static MidiManager()
     {
@@ -38,6 +39,23 @@ public static class MidiManager
         var opened = await OpenInput(inputDeviceName);
         if (!opened && ActiveInputDevices.ContainsKey(inputDeviceName))
             ActiveInputDevices.Remove(inputDeviceName);
+        return opened;
+    }
+
+    public static async Task<bool> OpenOutput(string outputDeviceName)
+    {
+        var outputInfo = AvailableOutputDevices.SingleOrDefault(o => o.Name.ToLower() == outputDeviceName.ToLower());
+        if (outputInfo == default) return false;
+        ActiveOutputDevices[outputDeviceName] = new MidiOutputDevice(await AccessManager.OpenOutputAsync(outputInfo.Id));
+        return true;
+    }
+
+    public static async Task<bool> EnsureOutputReady(string outputDeviceName)
+    {
+        if (ActiveOutputDevices.ContainsKey(outputDeviceName)) return true;
+        var opened = await OpenOutput(outputDeviceName);
+        if (!opened && ActiveOutputDevices.ContainsKey(outputDeviceName))
+            ActiveOutputDevices.Remove(outputDeviceName);
         return opened;
     }
 

@@ -46,7 +46,7 @@ public class MidiInputDevice
             case MessageType.NoteOn:
                 {
                     var noteNumber = (int)e.Data[1];
-                    Debug.WriteLine($"Note On: {noteNumber}");
+                    // Debug.WriteLine($"Note On: {noteNumber}");
                     var velocity = (int)e.Data[2];
                     if (velocity != 0) NoteOn.Invoke(noteNumber, velocity);
                     else NoteOff.Invoke(noteNumber);
@@ -55,7 +55,7 @@ public class MidiInputDevice
             case MessageType.NoteOff:
                 {
                     var noteNumber = (int)e.Data[1];
-                    Debug.WriteLine($"Note Off: {noteNumber}");
+                    // Debug.WriteLine($"Note Off: {noteNumber}");
                     NoteOff.Invoke(noteNumber);
                     break;
                 }
