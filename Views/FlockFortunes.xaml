@@ -42,6 +42,7 @@
 
 
         <Label 
+            x:Name="Answer0"
             Grid.Column="1" 
             Grid.Row="1"
             Grid.RowSpan="2"
@@ -49,32 +50,30 @@
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="Answer1"
             Grid.Column="1" 
             Grid.Row="2"
             Text="XXXXXXX"
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="Answer2"
             Grid.Column="1" 
             Grid.Row="3"
             Text="XXXXXXX"
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="Answer3"
             Grid.Column="1" 
             Grid.Row="4"
             Text="XXXXXXX"
             HorizontalOptions="Center" />
 
         <Label 
+            x:Name="Answer4"
             Grid.Column="1" 
             Grid.Row="5"
-            Text="XXXXXXX"
-            HorizontalOptions="Center" />
-
-        <Label 
-            Grid.Column="1" 
-            Grid.Row="6"
             Text="XXXXXXX"
             HorizontalOptions="Center" />
 

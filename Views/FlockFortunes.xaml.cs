@@ -26,6 +26,9 @@ public partial class FlockFortunes : ContentPage
     private int guessNumber = 0;
     private int lastPad;
 
+	public int teamAScore = 0;
+	public int teamBScore = 0;
+
 
 	public FlockFortunes()
 	{
@@ -164,12 +167,23 @@ public partial class FlockFortunes : ContentPage
     {
         // Stub: Implement logic to update team score
 		Debug.WriteLine("Update team score: " + team + " " + sightings);
+		if (team == 1){
+			teamAScore += sightings;
+			Debug.WriteLine("Team A score updated: " + teamAScore);
+		} else {
+			teamBScore += sightings;
+			Debug.WriteLine("Team B score updated: " + teamBScore);
+		}
     }
 
     private void ShowAnswer(int index)
     {
-        // Stub: Implement logic to display the answer
 		Debug.WriteLine("Show answer: " + index);
+		Label AnswerLabel = this.FindByName<Label>($"Answer{index.ToString()}");
+		MainThread.BeginInvokeOnMainThread(() =>
+		{
+			AnswerLabel.Text = Birds[index].CommonName + " " + Birds[index].Sightings;
+		});
     }
 
 	private void HandleNoteOff(int note)
