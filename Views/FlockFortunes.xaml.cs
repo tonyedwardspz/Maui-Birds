@@ -159,13 +159,29 @@ public partial class FlockFortunes : ContentPage
 		});
 		PlaySoundEffect("incorrect");
 
+		if (team == "A" && teamAWrong == 3){
+			GameOver("wrong");
+		} else if (team == "B" && teamBWrong == 3){
+			GameOver("wrong");
+		} else {
 		SetCurrentTeam(CurrentTeam);
+		}
 	}
 
 	private void GameOver(string result)
     {
         // Stub: Implement logic to handle game over
 		Debug.WriteLine("Game over: " + result);
+
+		if (result == "complete"){
+			if (teamAScore > teamBScore){
+				MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage($"Team A wins with {teamAScore} points!")));
+			} else {
+				MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage($"Team B wins with {teamBScore} points!")));
+			}
+		} else if (result == "wrong"){
+			MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage($"Team {CurrentTeam} loses :(")));
+		}
     }
 	
 	private void SetCurrentTeam(string currentTeam)

@@ -33,8 +33,8 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = this;
-		LoadBirdsAsync();
-		InitializeMidiAsync();
+        _ = LoadBirdsAsync();
+        _ = InitializeMidiAsync();
 	}
 
 	private async Task LoadBirdsAsync()
@@ -159,6 +159,13 @@ public partial class PlayYourBirdsRight : ContentPage
 		string previousBirdBox = $"Team{CurrentTeam}Bird{index}";
         MainThread.BeginInvokeOnMainThread(() => this.FindByName<Label>(previousBirdBox + "SightingsLabel").Text = currentBird.Sightings.ToString());
 		HasSelected = false;
+
+		// Game over
+		if (CurrentTeam == "A" && TeamABirds.Count == 5){
+			GameOver("complete");
+		} else if (CurrentTeam == "B" && TeamBBirds.Count == 5){
+			GameOver("complete");
+		}		
 	}
 
 	private void SwapTeams(){
@@ -251,6 +258,14 @@ public partial class PlayYourBirdsRight : ContentPage
 
         Debug.WriteLine(team);
         return team;
+    }
+
+	private void GameOver(string result)
+    {
+        // Stub: Implement logic to handle game over
+		Debug.WriteLine("Game over: " + result);
+
+		MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage($"Team {CurrentTeam} wins!")));
     }
 
 	// when the page is disposed, remove the midi event handlers
