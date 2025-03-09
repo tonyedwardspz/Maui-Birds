@@ -13,6 +13,7 @@
 
 
         <Label 
+            x:Name="TeamALabel"
             Grid.Column="0" 
             Grid.Row="1"
             Grid.RowSpan="2"
@@ -88,6 +89,7 @@
 
 
         <Label 
+            x:Name="TeamBLabel"
             Grid.Column="2" 
             Grid.Row="1"
             Grid.RowSpan="2"

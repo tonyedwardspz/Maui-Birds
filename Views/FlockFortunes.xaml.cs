@@ -54,7 +54,7 @@ public partial class FlockFortunes : ContentPage
 
 		// var outputs = MidiManager.AvailableOutputDevices;
 		// await MidiManager.EnsureOutputReady("APC Key 25");
-		
+
 		// await MidiManager.OpenOutput("APC Key 25");
 		// MidiManager.ActiveOutputDevices["APC Key 25"].Send(new byte[] { 0, 48, 127 }, 0, 3, 0);
 	}
@@ -69,10 +69,10 @@ public partial class FlockFortunes : ContentPage
 			PlaySoundEffect("team_buzzer");
 			if (note == 48){
 				Debug.WriteLine("Team A hit first");
-				CurrentTeam = "A";
+				SetCurrentTeam("B");
 			} else if (note == 72){
 				Debug.WriteLine("Team B hit first");
-				CurrentTeam = "B";
+				SetCurrentTeam("A");
 			}
 			hasGameStarted = true;
 			return;
@@ -83,12 +83,12 @@ public partial class FlockFortunes : ContentPage
 			if (teamOneBirdButtons.Contains(note) && CurrentTeam == "A")
 			{
 				CheckAnswer(teamOneBirdButtons.IndexOf(note), 1);
-				CurrentTeam = "A";
+				SetCurrentTeam("B");
 			}
 			else if (teamTwoBirdButtons.Contains(note) && CurrentTeam == "B")
 			{
 				CheckAnswer(teamTwoBirdButtons.IndexOf(note), 2);
-				CurrentTeam = "B";
+				SetCurrentTeam("A");
 			}
 			teamSelected = true;
 			return;
@@ -159,7 +159,7 @@ public partial class FlockFortunes : ContentPage
 		});
 		PlaySoundEffect("incorrect");
 
-		CurrentTeam = CurrentTeam == "A" ? "B" : "A";
+		SetCurrentTeam(CurrentTeam);
 	}
 
 	private void GameOver(string result)
@@ -167,6 +167,24 @@ public partial class FlockFortunes : ContentPage
         // Stub: Implement logic to handle game over
 		Debug.WriteLine("Game over: " + result);
     }
+	
+	private void SetCurrentTeam(string currentTeam)
+	{
+		CurrentTeam = currentTeam == "A" ? "B" : "A";
+		Debug.WriteLine("Last team: " + currentTeam);
+		Debug.WriteLine("Current team: " + CurrentTeam);
+
+		Label activeTeamLabel = this.FindByName<Label>($"Team{CurrentTeam}Label");
+		Label inactiveTeamLabel = this.FindByName<Label>($"Team{currentTeam}Label");
+
+		MainThread.BeginInvokeOnMainThread(() =>
+		{
+			activeTeamLabel.TextDecorations = TextDecorations.Underline;
+			activeTeamLabel.FontAttributes = FontAttributes.Bold;
+			inactiveTeamLabel.TextDecorations = TextDecorations.None;
+			inactiveTeamLabel.FontAttributes = FontAttributes.None;
+		});
+	}
 
     private void UpdateTeamScore(int team, int sightings)
     {
