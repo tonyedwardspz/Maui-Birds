@@ -18,32 +18,32 @@
             Grid.Row="1"
             Grid.RowSpan="2"
             Text="Team A"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesTeamLabelStyle}" />
 
         <Image 
             x:Name="TeamAWrong1"
             Grid.Column="0" 
             Grid.Row="2"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
 
         <Image 
             x:Name="TeamAWrong2"
             Grid.Column="0" 
             Grid.Row="3"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
 
         <Image 
             x:Name="TeamAWrong3"
             Grid.Column="0" 
             Grid.Row="4"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
 
         <Label 
             x:Name="TeamAScore"
+            Text="0"
+            Style="{StaticResource FortunesScoreLabelStyle}"
             Grid.Column="0" 
-            Grid.Row="5"
-            HorizontalOptions="Center"
-            VerticalOptions="Center" />
+            Grid.Row="5" />
 
 
 
@@ -55,35 +55,40 @@
             Grid.Row="1"
             Grid.RowSpan="2"
             Text="XXXXXXX"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesAnswerLabelStyle}"
+            />
 
         <Label 
             x:Name="Answer1"
             Grid.Column="1" 
             Grid.Row="2"
             Text="XXXXXXX"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesAnswerLabelStyle}"
+            />
 
         <Label 
             x:Name="Answer2"
             Grid.Column="1" 
             Grid.Row="3"
             Text="XXXXXXX"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesAnswerLabelStyle}"
+            />
 
         <Label 
             x:Name="Answer3"
             Grid.Column="1" 
             Grid.Row="4"
             Text="XXXXXXX"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesAnswerLabelStyle}"
+            />
 
         <Label 
             x:Name="Answer4"
             Grid.Column="1" 
             Grid.Row="5"
             Text="XXXXXXX"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesAnswerLabelStyle}"
+            />
 
 
 
@@ -94,32 +99,32 @@
             Grid.Row="1"
             Grid.RowSpan="2"
             Text="Team B"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesTeamLabelStyle}" />
 
         <Image 
             x:Name="TeamBWrong1"
             Grid.Column="2" 
             Grid.Row="2"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
 
         <Image 
             x:Name="TeamBWrong2"
             Grid.Column="2" 
             Grid.Row="3"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
 
         <Image 
             x:Name="TeamBWrong3"
             Grid.Column="2" 
             Grid.Row="4"
-            HorizontalOptions="Center" />
+            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
 
         <Label 
             x:Name="TeamBScore"
+            Text="0"
             Grid.Column="2" 
             Grid.Row="5"
-            HorizontalOptions="Center"
-            VerticalOptions="Center" />
+            Style="{StaticResource FortunesScoreLabelStyle}" />
 
 
 
