@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using CommunityToolkit.Maui.Views;
 using Maui_Birds.Helpers;
 using Maui_Birds.Midi;
@@ -211,5 +211,25 @@ public partial class FlockFortunes : ContentPage
 		{
 			AnswerLabel.Text = Birds[index].CommonName + " " + Birds[index].Sightings;
 		});
+    }
+
+	// when the page is disposed, remove the midi event handlers
+	protected override void OnDisappearing()
+	{
+		try
+        {
+            if (MidiManager.ActiveInputDevices.ContainsKey("APC Key 25"))
+            {
+                var device = MidiManager.ActiveInputDevices["APC Key 25"];
+                if (device != null)
+                {
+                    device.NoteOn -= HandleNoteOn;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error cleaning up MIDI handlers: {ex.Message}");
+        }
     }
 }
