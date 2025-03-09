@@ -90,6 +90,11 @@
 	  <None Remove="Resources\Raw\tawny_owl.mp3" />
 	  <None Remove="Resources\Raw\wood_pigeon.mp3" />
 	  <None Remove="Resources\Raw\wren.mp3" />
+
+	  <None Remove="Resources\Raw\correct.mp3" />
+	  <None Remove="Resources\Raw\incorrect.mp3" />
+	  <None Remove="Resources\Raw\team_buzzer.mp3" />
+
 	  <None Remove="Resources\Images\blackbird.jpg" />
 	  <None Remove="Resources\Images\blue_tit.jpg" />
 	  <None Remove="Resources\Images\buzzard.jpg" />

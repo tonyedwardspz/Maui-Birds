@@ -3,6 +3,8 @@ using CommunityToolkit.Maui.Views;
 using Maui_Birds.Helpers;
 using Maui_Birds.Midi;
 using Maui_Birds.Models;
+using Microsoft.VisualBasic;
+using FileSystem = Microsoft.Maui.Storage.FileSystem;
 
 namespace Maui_Birds.Views;
 
@@ -20,7 +22,7 @@ public partial class FlockFortunes : ContentPage
 	public string CurrentTeam { get; set; } = "A";
 
 	private List<int> teamOneBirdButtons = new List<int> { 32, 24, 16, 8, 0 };
-    private List<int> teamTwoBirdButtons = new List<int> { 7, 15, 23, 31, 39 };
+    private List<int> teamTwoBirdButtons = new List<int> { 39, 31, 23, 15, 7 };
 
 	private List<int> guesses = new List<int>();
     private int guessNumber = 0;
@@ -29,6 +31,8 @@ public partial class FlockFortunes : ContentPage
 	public int teamAScore = 0;
 	public int teamBScore = 0;
 
+	public int teamAWrong = 0;
+	public int teamBWrong = 0;
 
 	public FlockFortunes()
 	{
@@ -42,7 +46,6 @@ public partial class FlockFortunes : ContentPage
 	private async Task LoadBirdsAsync()
 	{
 		Birds = await BirdHelper.LoadConfig("data.json");
-		// sort the birds by sightings
 		Birds = Birds.OrderByDescending(b => b.Sightings).ToList().Take(5).ToList();
 	}
 
@@ -51,8 +54,10 @@ public partial class FlockFortunes : ContentPage
 		var inputs = MidiManager.AvailableInputDevices;
 		await MidiManager.EnsureInputReady("APC Key 25");
 
+
+
 		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn += HandleNoteOn;
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOff += HandleNoteOff;
+		// MidiManager.ActiveInputDevices["APC Key 25"].NoteOff += HandleNoteOff;
 
 		// var outputs = MidiManager.AvailableOutputDevices;
 		// Debug.WriteLine(outputs.Count);
@@ -69,6 +74,7 @@ public partial class FlockFortunes : ContentPage
 		// Listen for the starting team key 48 / 72
 		if (!hasGameStarted && !teamSelected)
 		{
+			PlaySoundEffect("team_buzzer");
 			if (note == 48){
 				// Team A hit first
 				Debug.WriteLine("Team A hit first");
@@ -77,55 +83,51 @@ public partial class FlockFortunes : ContentPage
 			} else if (note == 72){
 				// Team B hit first
 				Debug.WriteLine("Team B hit first");
+				CurrentTeam = "B";
 				hasGameStarted = true;
 			}
 			return;
 		}
 
+		// Listen for the first guess to decide in play team
 		if (hasGameStarted && !teamSelected){
 			if (teamOneBirdButtons.Contains(note) && CurrentTeam == "A")
 			{
 				int index = teamOneBirdButtons.IndexOf(note);
 				CheckAnswer(index, 1);
-				ShowAnswer(index);
+				CurrentTeam = "A";
+				teamSelected = true;
 			}
 			else if (teamTwoBirdButtons.Contains(note) && CurrentTeam == "B")
 			{
 				int index = teamTwoBirdButtons.IndexOf(note);
 				CheckAnswer(index, 2);
-				ShowAnswer(index);
+				CurrentTeam = "B";
+				teamSelected = true;
 			}
 			return;
 		}
 
-		if (hasGameStarted && teamSelected){
-			
-			// Game on
-			var bird = Birds.FirstOrDefault(b => b.Id == note);
+		// Listen for the wrong guesses to swap teams
+		if (note == 34 || note == 35){
+			teamAWrong++;
+			WrongGuess("B", "TeamAWrong" + teamAWrong.ToString());
+			return;
+		} 
+		else if (note == 36 || note == 37) {
+			teamBWrong++;
+			WrongGuess("A", "TeamBWrong" + teamBWrong.ToString());
+			return;
+		}
 
-
-
-
-
-
-
-			MainThread.BeginInvokeOnMainThread(() =>
-			{
-				string filename = $"{bird.CommonName.Replace(" ", "_").ToLower()}.mp3";
-
-				if (FileSystem.AppPackageFileExistsAsync(filename).Result)
-				{
-					MediaSource source = MediaSource.FromResource(filename);
-					BirdSongPlayer.Source = source;
-				}
-				else
-				{
-					MediaSource source = MediaSource.FromResource("placeholder.wav");
-					BirdSongPlayer.Source = source;
-				}
-				BirdSongPlayer.Play();
-			});
-
+		// Listen for the correct guesses to update the score
+		if (teamOneBirdButtons.Contains(note) && CurrentTeam == "A")
+		{
+			CheckAnswer(teamOneBirdButtons.IndexOf(note), 1);
+		}
+		else if (teamTwoBirdButtons.Contains(note) && CurrentTeam == "B")
+		{
+			CheckAnswer(teamTwoBirdButtons.IndexOf(note), 2);
 		}
 	}
 
@@ -133,14 +135,14 @@ public partial class FlockFortunes : ContentPage
     {
         if (!guesses.Contains(guess))
         {
-            // PlaySound("./audio/effects/correct.mp3");
             guessNumber++;
             var answer = Birds[guess];
             guesses.Add(guess);
 
-            Console.WriteLine($"Answer: {answer.CommonName}");
+            Debug.WriteLine($"Answer: {answer.CommonName}");
             UpdateTeamScore(team, answer.Sightings ?? 0);
             ShowAnswer(guess);
+			PlaySoundEffect("correct");
             // RemoveLight(lastPad);
 
             if (guessNumber == 5)
@@ -152,9 +154,33 @@ public partial class FlockFortunes : ContentPage
         }
     }
 
-	private void WrongGuess(string team)
+	private void PlaySoundEffect(string effectName)
+	{
+		MainThread.BeginInvokeOnMainThread(() =>
+		{
+			string filename = $"{effectName}.mp3";
+
+			if (FileSystem.AppPackageFileExistsAsync(filename).Result)
+			{
+				MediaSource source = MediaSource.FromResource(filename);
+				AudioPlayer.Source = source;
+			}
+			AudioPlayer.Play();
+		});
+	}
+
+	private void WrongGuess(string team, string imageName)
 	{
 		Debug.WriteLine("Wrong guess: " + team);
+		Image wrongImage = this.FindByName<Image>(imageName);
+		MainThread.BeginInvokeOnMainThread(() =>
+		{
+			wrongImage.Source = "wrong.png";
+		});
+		PlaySoundEffect("incorrect");
+
+		// swap the team using a ternary operator
+		CurrentTeam = CurrentTeam == "A" ? "B" : "A";
 	}
 
 	private void GameOver(string result)
@@ -169,9 +195,18 @@ public partial class FlockFortunes : ContentPage
 		Debug.WriteLine("Update team score: " + team + " " + sightings);
 		if (team == 1){
 			teamAScore += sightings;
+			MainThread.BeginInvokeOnMainThread(() =>
+			{
+				TeamAScore.Text = teamAScore.ToString();
+			});
+			
 			Debug.WriteLine("Team A score updated: " + teamAScore);
 		} else {
 			teamBScore += sightings;
+			MainThread.BeginInvokeOnMainThread(() =>
+			{
+				TeamBScore.Text = teamBScore.ToString();
+			});
 			Debug.WriteLine("Team B score updated: " + teamBScore);
 		}
     }
@@ -191,7 +226,7 @@ public partial class FlockFortunes : ContentPage
 		Debug.WriteLine($"Note off from flock game: {note}");
 		MainThread.BeginInvokeOnMainThread(() =>
 		{
-			BirdSongPlayer.Stop();
+			AudioPlayer.Stop();
 		});
 	}
 }

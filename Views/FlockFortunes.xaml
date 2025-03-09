@@ -19,23 +19,30 @@
             Text="Team A"
             HorizontalOptions="Center" />
 
-        <Label 
+        <Image 
             x:Name="TeamAWrong1"
             Grid.Column="0" 
             Grid.Row="2"
             HorizontalOptions="Center" />
 
-        <Label 
+        <Image 
             x:Name="TeamAWrong2"
             Grid.Column="0" 
             Grid.Row="3"
             HorizontalOptions="Center" />
 
-        <Label 
+        <Image 
             x:Name="TeamAWrong3"
             Grid.Column="0" 
             Grid.Row="4"
             HorizontalOptions="Center" />
+
+        <Label 
+            x:Name="TeamAScore"
+            Grid.Column="0" 
+            Grid.Row="5"
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
 
 
 
@@ -87,23 +94,30 @@
             Text="Team B"
             HorizontalOptions="Center" />
 
-        <Label 
+        <Image 
             x:Name="TeamBWrong1"
             Grid.Column="2" 
             Grid.Row="2"
             HorizontalOptions="Center" />
 
-        <Label 
+        <Image 
             x:Name="TeamBWrong2"
             Grid.Column="2" 
             Grid.Row="3"
             HorizontalOptions="Center" />
 
-        <Label 
+        <Image 
             x:Name="TeamBWrong3"
             Grid.Column="2" 
             Grid.Row="4"
             HorizontalOptions="Center" />
+
+        <Label 
+            x:Name="TeamBScore"
+            Grid.Column="2" 
+            Grid.Row="5"
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
 
 
 
@@ -112,7 +126,7 @@
 
 
         <toolkit:MediaElement
-            x:Name="BirdSongPlayer"
+            x:Name="AudioPlayer"
             ShouldShowPlaybackControls="False"
             HeightRequest="1"
             WidthRequest="1"
