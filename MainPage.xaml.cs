@@ -185,7 +185,21 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 	// when the page is disposed, remove the midi event handlers
 	protected override void OnDisappearing()
 	{
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn -= HandleNoteOn;
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOff -= HandleNoteOff;
+		try
+        {
+            if (MidiManager.ActiveInputDevices.ContainsKey("APC Key 25"))
+            {
+                var device = MidiManager.ActiveInputDevices["APC Key 25"];
+                if (device != null)
+                {
+                    device.NoteOn -= HandleNoteOn;
+                    device.NoteOff -= HandleNoteOff;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error cleaning up MIDI handlers: {ex.Message}");
+        }
 	}
 }

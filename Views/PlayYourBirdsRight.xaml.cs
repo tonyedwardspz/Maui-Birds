@@ -252,4 +252,25 @@ public partial class PlayYourBirdsRight : ContentPage
         Debug.WriteLine(team);
         return team;
     }
+
+	// when the page is disposed, remove the midi event handlers
+	protected override void OnDisappearing()
+	{
+		try
+        {
+            if (MidiManager.ActiveInputDevices.ContainsKey("APC Key 25"))
+            {
+                var device = MidiManager.ActiveInputDevices["APC Key 25"];
+                if (device != null)
+                {
+                    device.NoteOn -= HandleNoteOn;
+                    device.NoteOff -= HandleNoteOff;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error cleaning up MIDI handlers: {ex.Message}");
+        }
+	}
 }
