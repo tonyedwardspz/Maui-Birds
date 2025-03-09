@@ -45,50 +45,97 @@
             Grid.Column="0" 
             Grid.Row="5" />
 
+    
 
-
-
-
-        <Label 
-            x:Name="Answer0"
+        <Grid
+            RowDefinitions="*,*,*,*,*"
+            ColumnDefinitions="*,*"
+            x:Name="AnswerGrid"
             Grid.Column="1" 
             Grid.Row="1"
-            Grid.RowSpan="2"
-            Text="XXXXXXX"
-            Style="{StaticResource FortunesAnswerLabelStyle}"
-            />
+            Grid.RowSpan="5"
+            >
 
-        <Label 
-            x:Name="Answer1"
-            Grid.Column="1" 
-            Grid.Row="2"
-            Text="XXXXXXX"
-            Style="{StaticResource FortunesAnswerLabelStyle}"
-            />
+            <Label 
+                x:Name="Answer0"
+                Grid.Row="0"
+                Grid.Column="0"
+                Text="XXXXXXX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
 
-        <Label 
-            x:Name="Answer2"
-            Grid.Column="1" 
-            Grid.Row="3"
-            Text="XXXXXXX"
-            Style="{StaticResource FortunesAnswerLabelStyle}"
-            />
+            <Label
+                x:Name="Answer0Sightings"
+                Grid.Row="0"
+                Grid.Column="1"
+                Text="XX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
 
-        <Label 
-            x:Name="Answer3"
-            Grid.Column="1" 
-            Grid.Row="4"
-            Text="XXXXXXX"
-            Style="{StaticResource FortunesAnswerLabelStyle}"
-            />
+            <Label 
+                x:Name="Answer1"
+                Grid.Row="1"
+                Grid.Column="0"
+                Text="XXXXXXX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
 
-        <Label 
-            x:Name="Answer4"
-            Grid.Column="1" 
-            Grid.Row="5"
-            Text="XXXXXXX"
-            Style="{StaticResource FortunesAnswerLabelStyle}"
-            />
+            <Label
+                x:Name="Answer1Sightings"
+                Grid.Row="1"
+                Grid.Column="1"
+                Text="XX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
+
+            <Label 
+                x:Name="Answer2"
+                Grid.Row="2"
+                Grid.Column="0"
+                Text="XXXXXXX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
+
+            <Label 
+                x:Name="Answer2Sightings"
+                Grid.Row="2"
+                Grid.Column="1"
+                Text="XX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
+
+            <Label 
+                x:Name="Answer3"
+                Grid.Row="3"
+                Grid.Column="0"
+                Text="XXXXXXX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
+
+            <Label
+                x:Name="Answer3Sightings"
+                Grid.Row="3"
+                Grid.Column="1"
+                Text="XX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
+
+            <Label 
+                x:Name="Answer4"
+                Grid.Row="4"
+                Grid.Column="0"
+                Text="XXXXXXX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
+
+            <Label
+                x:Name="Answer4Sightings"
+                Grid.Row="4"
+                Grid.Column="1" 
+                Text="XX"
+                Style="{StaticResource FortunesAnswerLabelStyle}"
+                />
+        </Grid>
 
 
 

@@ -1,5 +1,6 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using CommunityToolkit.Maui.Views;
+using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
 using Maui_Birds.Midi;
 using Maui_Birds.Models;
@@ -164,7 +165,7 @@ public partial class FlockFortunes : ContentPage
 		} else if (team == "B" && teamBWrong == 3){
 			GameOver("wrong");
 		} else {
-		SetCurrentTeam(CurrentTeam);
+			SetCurrentTeam(CurrentTeam);
 		}
 	}
 
@@ -221,11 +222,13 @@ public partial class FlockFortunes : ContentPage
     {
 		Debug.WriteLine("Show answer: " + index);
 		Label AnswerLabel = this.FindByName<Label>($"Answer{index.ToString()}");
-
+		Label AnswerSightings = this.FindByName<Label>($"Answer{index.ToString()}Sightings");
+		
 		if (Birds == null) return;
 		MainThread.BeginInvokeOnMainThread(() =>
 		{
-			AnswerLabel.Text = Birds[index].CommonName + " " + Birds[index].Sightings;
+			AnswerLabel.Text = Birds[index].CommonName;
+			AnswerSightings.Text = Birds[index].Sightings.ToString();
 		});
     }
 
@@ -247,5 +250,5 @@ public partial class FlockFortunes : ContentPage
         {
             Debug.WriteLine($"Error cleaning up MIDI handlers: {ex.Message}");
         }
-    }
+	}
 }
