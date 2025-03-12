@@ -85,13 +85,17 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		}
 	}
 
+	public Audience Audience { get; set; }
+
 	public MainPage()
 	{
 		InitializeComponent();
 		BindingContext = this;
 
-	    LoadBirdsAsync();
-		InitializeMidiAsync();
+		Audience = new Audience(1);
+
+        _ = LoadBirdsAsync();
+        _ = InitializeMidiAsync();
 	}
 
 	private async Task LoadBirdsAsync()
