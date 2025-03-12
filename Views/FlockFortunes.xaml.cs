@@ -17,6 +17,13 @@ public partial class FlockFortunes : ContentPage
 		set => _birds = value;
 	}
 
+	private List<Bird>? _guessedBirds;
+	public List<Bird>? GuessedBirds
+	{
+		get => _guessedBirds;
+		set => _guessedBirds = value;
+	}
+
 	private bool hasGameStarted = false;
 	private bool teamSelected = false;
 	public string CurrentTeam { get; set; } = "A";
@@ -35,6 +42,8 @@ public partial class FlockFortunes : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = this;
+
+		GuessedBirds = new List<Bird>();
 
         _ = LoadBirdsAsync();
         _ = InitializeMidiAsync();
@@ -123,6 +132,11 @@ public partial class FlockFortunes : ContentPage
 		if (Birds == null) return;
 		guessNumber++;
 		var answer = Birds[guess];
+
+		if (GuessedBirds.Contains(answer)) return;
+
+		GuessedBirds.Add(answer);
+
 
 		Debug.WriteLine($"Answer: {answer.CommonName}");
 		UpdateTeamScore(team, answer.Sightings ?? 0);
