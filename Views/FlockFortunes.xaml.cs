@@ -62,11 +62,15 @@ public partial class FlockFortunes : ContentPage
 
 		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn += HandleNoteOn;
 
-		// var outputs = MidiManager.AvailableOutputDevices;
-		// await MidiManager.EnsureOutputReady("APC Key 25");
+		// try {
+		// 	var outputs = MidiManager.AvailableOutputDevices;
+		// 	await MidiManager.EnsureOutputReady("APC Key 25");
 
-		// await MidiManager.OpenOutput("APC Key 25");
-		// MidiManager.ActiveOutputDevices["APC Key 25"].Send(new byte[] { 0, 48, 127 }, 0, 3, 0);
+		// 	await MidiManager.OpenOutput("APC Key 25");
+		// 	MidiManager.ActiveOutputDevices["APC Key 25"].Send(new byte[] { 0, 48, 127 }, 0, 3, 0);
+		// } catch (Exception ex) {
+		// 	Debug.WriteLine($"Error initializing MIDI: {ex.Message}");
+		// }
 	}
 
 	private void HandleNoteOn(int note, int velocity)

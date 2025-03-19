@@ -10,8 +10,8 @@ namespace Maui_Birds.Views;
 
 public partial class PlayYourBirdsRight : ContentPage
 {
-	private List<Bird> _birds;
-	public List<Bird> Birds
+	private List<Bird>? _birds;
+	public List<Bird>? Birds
 	{
 		get => _birds;
 		set
@@ -26,9 +26,7 @@ public partial class PlayYourBirdsRight : ContentPage
 	private bool HasSelected = false;
 	private bool GuessedHigher = false;
 	public string CurrentTeam { get; set; } = "A";
-
-
-
+	
 	public PlayYourBirdsRight()
 	{
 		InitializeComponent();

@@ -38,8 +38,11 @@
 	<array>
 		<string>bluetooth-central</string>
 		<string>audio</string>
+		<string>fetch</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string></string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
 </dict>
 </plist>

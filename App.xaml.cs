@@ -9,11 +9,14 @@ public partial class App : Application
     public App()
 	{
         Config = ConfigHelper.LoadConfig("appsettings.json").Result;
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Config.SyncFusionLicence);
+        // Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Config.SyncFusionLicence);
 
         InitializeComponent();
-
-		MainPage = new AppShell();
 	}
+
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new AppShell());
+    }
 }
 
