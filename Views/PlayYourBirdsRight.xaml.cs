@@ -22,14 +22,14 @@ public partial class PlayYourBirdsRight : ContentPage
 			OnPropertyChanged(nameof(Birds));
 		}
 	}
-	public ObservableCollection<Bird> TeamABirds { get; set; } = new ObservableCollection<Bird>();
-	public ObservableCollection<Bird> TeamBBirds { get; set; } = new ObservableCollection<Bird>();
-	private bool teamSelected = false;
-	private bool HasSelected = false;
-	private bool GuessedHigher = false;
-	public string CurrentTeam { get; set; } = "A";
+	private ObservableCollection<Bird> TeamABirds { get; set; } = new ObservableCollection<Bird>();
+	private ObservableCollection<Bird> TeamBBirds { get; set; } = new ObservableCollection<Bird>();
+	private bool _teamSelected = false;
+	private bool _hasSelected = false;
+	private bool _guessedHigher = false;
+	private string CurrentTeam { get; set; } = "A";
 	
-	private MIDILightController? midiController;
+	private MIDILightController? _midiController;
 	
 	public PlayYourBirdsRight()
 	{
@@ -48,31 +48,35 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		try
 		{
-			midiController = new MIDILightController();
+			_midiController = new MIDILightController();
 			NSError? error;
 			
-			if (!midiController.InitializeAndReturnError(out error))
+			if (!_midiController.InitializeAndReturnError(out error))
 			{
 				Debug.WriteLine($"Failed to initialize MIDI: {error?.Description}");
 				return;
 			}
 
-			var availableSources = midiController.GetAvailableSourcesWithContaining("APC Key 25");
+			var availableSources = _midiController.GetAvailableSourcesWithContaining("APC Key 25");
 			if (availableSources.Length > 0)
 			{
 				// Connect to the first matching source
-				if (!midiController.ConnectSourceAt(0, out error))
+				if (!_midiController.ConnectSourceAt(0, out error))
 				{
 					Debug.WriteLine($"Failed to connect to MIDI source: {error?.Description}");
 					return;
 				}
 
 				// Set up the callback for MIDI messages
-				midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
+				_midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
 				{
 					if ((status & 0xF0) == 0x90) // Note On message
 					{
 						HandleNoteOn(data1, data2);
+					}
+					else
+					{
+						Debug.WriteLine($"Other MIDI message type: {status:X2}");
 					}
 				});
 			}
@@ -86,10 +90,10 @@ public partial class PlayYourBirdsRight : ContentPage
 	private void HandleNoteOn(int note, int velocity)
 	{
 		// Game start
-		if (!teamSelected)
+		if (!_teamSelected)
 		{
 			CurrentTeam = SelectStartingTeam(note);
-			teamSelected = true;
+			_teamSelected = true;
 
 			var random = new Random();
 			var randomBird = Birds[random.Next(Birds.Count)];
@@ -97,17 +101,17 @@ public partial class PlayYourBirdsRight : ContentPage
 			return;
 		}
 
-		// Bird already selected and theres not a guess in progress
-		if ((TeamABirds.Any(b => b.Id == note) || TeamBBirds.Any(b => b.Id == note)) && !HasSelected){
+		// Bird already selected and there's not a guess in progress
+		if ((TeamABirds.Any(b => b.Id == note) || TeamBBirds.Any(b => b.Id == note)) && !_hasSelected){
 			Debug.WriteLine("Bird Already Selected");
 			MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage("This bird has already been selected")));
 			return;
 		}
 
 		// Bird selected
-		if ((note >= 41 && note <= 72) && !HasSelected){
+		if ((note >= 41 && note <= 72) && !_hasSelected){
 			Debug.WriteLine("Bird Selected");
-			HasSelected = true;
+			_hasSelected = true;
 		} else if (note >= 41 && note <= 72){
 			Debug.WriteLine("Guess in progress");
 			return;
@@ -116,13 +120,13 @@ public partial class PlayYourBirdsRight : ContentPage
 		// Higher guess
 		if ((note >= 32 && note <= 39)){
 			Debug.WriteLine("Higher Guess");
-			GuessedHigher = true;
+			_guessedHigher = true;
 		}
 
 		// Lower guess
 		if ((note >= 0 && note <= 7)){ 
 			Debug.WriteLine("Lower Guess");
-			GuessedHigher = false;
+			_guessedHigher = false;
 		}
 
 		// Reveal answer
@@ -131,26 +135,29 @@ public partial class PlayYourBirdsRight : ContentPage
 			CalculateAnswer();
 		}
 
-		var bird = Birds.FirstOrDefault(b => b.Id == note);
-		UpdateGameBoard(bird);
+		if ((note >= 41 && note <= 72)){
+			var bird = Birds.FirstOrDefault(b => b.Id == note);
+			UpdateGameBoard(bird);
 
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            string filename = $"{bird.CommonName.Replace(" ", "_").ToLower()}.mp3";
+			MainThread.BeginInvokeOnMainThread(() =>
+			{
+				var filename = $"{bird.CommonName.Replace(" ", "_").ToLower()}.mp3";
 
-            if (FileSystem.AppPackageFileExistsAsync(filename).Result)
-            {
-                MediaSource source = MediaSource.FromResource(filename);
-                BirdSongPlayer.Source = source;
-            }
-            else
-            {
-                MediaSource source = MediaSource.FromResource("placeholder.wav");
-                BirdSongPlayer.Source = source;
-            }
-            BirdSongPlayer.Play();
-        });
-    }
+				if (FileSystem.AppPackageFileExistsAsync(filename).Result)
+				{
+					var source = MediaSource.FromResource(filename);
+					BirdSongPlayer.Source = source;
+				}
+				else
+				{
+					var source = MediaSource.FromResource("placeholder.wav");
+					BirdSongPlayer.Source = source;
+				}
+
+				BirdSongPlayer.Play();
+			});
+		}
+	}
 
 	private void HandleNoteOff(int note)
 	{
@@ -174,22 +181,22 @@ public partial class PlayYourBirdsRight : ContentPage
             MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage("Nothing for a pair.")));
             SwapTeams();
         }
-		else if (answer == GuessedHigher)
+		else if (answer == _guessedHigher)
         {
             Debug.WriteLine("Correct Guess");
         }
         else
         {
 			Debug.WriteLine("Incorrect Guess");
-			HasSelected = false;
+			_hasSelected = false;
 			SwapTeams();
 			return;
 		}
 
-		int index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
-		string previousBirdBox = $"Team{CurrentTeam}Bird{index}";
+		var index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
+		var previousBirdBox = $"Team{CurrentTeam}Bird{index}";
         MainThread.BeginInvokeOnMainThread(() => this.FindByName<Label>(previousBirdBox + "SightingsLabel").Text = currentBird.Sightings.ToString());
-		HasSelected = false;
+		_hasSelected = false;
 
 		// Game over
 		if (CurrentTeam == "A" && TeamABirds.Count == 5){
@@ -200,8 +207,8 @@ public partial class PlayYourBirdsRight : ContentPage
 	}
 
 	private void SwapTeams(){
-		int index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
-		string previousBirdBox = $"Team{CurrentTeam}Bird{index}";
+		var index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
+		var previousBirdBox = $"Team{CurrentTeam}Bird{index}";
 
 		// remove the last item from the current teams bird collection
 		if (CurrentTeam == "A")
@@ -227,12 +234,12 @@ public partial class PlayYourBirdsRight : ContentPage
             UpdateGameBoard(randomBird);
         }
 
-		var NotCurrentTeam = CurrentTeam == "A" ? "B" : "A";
+		var notCurrentTeam = CurrentTeam == "A" ? "B" : "A";
 
 		MainThread.BeginInvokeOnMainThread(() =>
 		{
 			this.FindByName<Label>("Team" + CurrentTeam + "Label").TextDecorations = TextDecorations.Underline;
-			this.FindByName<Label>("Team" + NotCurrentTeam + "Label").TextDecorations = TextDecorations.None;
+			this.FindByName<Label>("Team" + notCurrentTeam + "Label").TextDecorations = TextDecorations.None;
 		});
 	}
 
@@ -240,10 +247,10 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		if (bird != null)
 		{
-			int index = CurrentTeam == "A" ? TeamABirds.Count : TeamBBirds.Count;
+			var index = CurrentTeam == "A" ? TeamABirds.Count : TeamBBirds.Count;
 			if (index < 0) index = 0;
 			
-			string birdBox = $"Team{CurrentTeam}Bird{index}";
+			var birdBox = $"Team{CurrentTeam}Bird{index}";
 
 			if (CurrentTeam == "A")
 				TeamABirds.Add(bird);
@@ -253,10 +260,10 @@ public partial class PlayYourBirdsRight : ContentPage
 			MainThread.BeginInvokeOnMainThread(() =>
 			{
 				this.FindByName<Image>(birdBox + "Image").Source = bird.ImageFilename;
-				this.FindByName<Label>(birdBox + "NameLabel").Text = bird.CommonName;
+				if (bird.CommonName != null) this.FindByName<Label>(birdBox + "NameLabel").Text = bird.CommonName;
 
 				if (index <= 0)
-					this.FindByName<Label>(birdBox + "SightingsLabel").Text = bird.Sightings.ToString();
+					this.FindByName<Label>(birdBox + "SightingsLabel").Text = bird.Sightings.ToString() ?? string.Empty;
 			});
 		}
 	}
@@ -270,7 +277,7 @@ public partial class PlayYourBirdsRight : ContentPage
             new int[] {32, 35}
         };
 
-		string team = "C";
+		var team = "C";
 
         foreach (var range in teamARanges)
         {
@@ -280,11 +287,11 @@ public partial class PlayYourBirdsRight : ContentPage
 		if (team != "A")
 			team = "B";
 
-		string TeamLabel = $"Team{team}Label";
+		var teamLabel = $"Team{team}Label";
 
 		MainThread.BeginInvokeOnMainThread(() =>
 		{
-			this.FindByName<Label>(TeamLabel).TextDecorations = TextDecorations.Underline;
+			this.FindByName<Label>(teamLabel).TextDecorations = TextDecorations.Underline;
 		});
 
         Debug.WriteLine(team);
@@ -295,7 +302,6 @@ public partial class PlayYourBirdsRight : ContentPage
     {
         // Stub: Implement logic to handle game over
 		Debug.WriteLine("Game over: " + result);
-
 		MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage($"Team {CurrentTeam} wins!")));
     }
 
@@ -304,8 +310,7 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		try
         {
-            // The callback will be automatically cleaned up when the MIDILightController
-            // is disposed, so we don't need to explicitly remove it
+	        _midiController?.Dispose();
             base.OnDisappearing();
         }
         catch (Exception ex)
