@@ -5,6 +5,8 @@ VisualStudioVersion = 25.0.1706.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maui Birds", "Maui Birds.csproj", "{55A90C52-2109-42A9-BF5B-97850CDEA4EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewBinding.MaciOS.Binding", "..\MIDILightControllerInterop\macios\NewBinding.MaciOS.Binding\NewBinding.MaciOS.Binding.csproj", "{3F09FB7E-1D73-49F5-A6C1-961E01C9B4F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{55A90C52-2109-42A9-BF5B-97850CDEA4EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55A90C52-2109-42A9-BF5B-97850CDEA4EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55A90C52-2109-42A9-BF5B-97850CDEA4EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F09FB7E-1D73-49F5-A6C1-961E01C9B4F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F09FB7E-1D73-49F5-A6C1-961E01C9B4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F09FB7E-1D73-49F5-A6C1-961E01C9B4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F09FB7E-1D73-49F5-A6C1-961E01C9B4F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

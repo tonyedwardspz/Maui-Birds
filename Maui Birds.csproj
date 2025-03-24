@@ -63,6 +63,16 @@
 		<PackageReference Include="Syncfusion.Maui.Core" Version="28.2.12" /> -->
 	</ItemGroup>
 
+	<ItemGroup Condition="$(TargetFramework.Contains('ios')) Or $(TargetFramework.Contains('maccatalyst'))">
+		<ProjectReference Include="..\MIDILightControllerInterop\macios\NewBinding.MaciOS.Binding\NewBinding.MaciOS.Binding.csproj">
+		  <ReferenceSourceTarget></ReferenceSourceTarget>
+		</ProjectReference>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<_CodesignDisableTimestamp>true</_CodesignDisableTimestamp>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <None Remove="Resources\Raw\appsettings.json" />
 	  <None Remove="Helpers\" />

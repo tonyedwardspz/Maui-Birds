@@ -47,6 +47,7 @@ public static class MidiManager
         var outputInfo = AvailableOutputDevices.SingleOrDefault(o => o.Name.ToLower() == outputDeviceName.ToLower());
         if (outputInfo == default) return false;
         ActiveOutputDevices[outputDeviceName] = new MidiOutputDevice(await AccessManager.OpenOutputAsync(outputInfo.Id));
+        Debug.WriteLine($"Successfully opened output device {outputDeviceName}");
         return true;
     }
 
@@ -56,6 +57,7 @@ public static class MidiManager
         var opened = await OpenOutput(outputDeviceName);
         if (!opened && ActiveOutputDevices.ContainsKey(outputDeviceName))
             ActiveOutputDevices.Remove(outputDeviceName);
+        Debug.WriteLine($"Successfully ensured output device {outputDeviceName} is ready");
         return opened;
     }
 

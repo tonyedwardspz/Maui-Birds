@@ -4,6 +4,8 @@ using Maui_Birds.Midi;
 using Maui_Birds.Models;
 using System.ComponentModel;
 using CommunityToolkit.Maui.Views;
+using Foundation;
+using NewBindingMaciOS;
 
 namespace Maui_Birds;
 
@@ -87,6 +89,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	public Audience Audience { get; set; }
 
+	private MIDILightController _midiController;
+
 	public MainPage()
 	{
 		InitializeComponent();
@@ -106,12 +110,85 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	private async Task InitializeMidiAsync()
 	{
-		var inputs = MidiManager.AvailableInputDevices;
-		Debug.WriteLine(inputs.Count);
-		await MidiManager.EnsureInputReady("APC Key 25");
+		NSError? error;
+		var midiController = new MIDILightController();
+		Debug.WriteLine("Initializing MIDI controller...");
+		var initialized = midiController.InitializeAndReturnError(out error);
+		Debug.WriteLine($"MIDI controller initialized: {initialized}, Error: {error?.LocalizedDescription ?? "none"}");
+		
+		// Setup MIDI input callback
+		Debug.WriteLine("Setting up MIDI callback...");
+		midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
+		{
+			try
+			{
+				Debug.WriteLine("=== MIDI Callback Triggered ===");
+				Debug.WriteLine($"Raw MIDI Message - Status: {status:X2}, Data1: {data1:X2}, Data2: {data2:X2}");
+				
+				MainThread.BeginInvokeOnMainThread(() =>
+				{
+					// Check if it's a Note On message (status byte: 0x90)
+					if ((status & 0xF0) == 0x90)
+					{
+						Debug.WriteLine($"Note On detected - Note: {data1}, Velocity: {data2}");
+						if (data2 > 0) // Some devices send Note On with velocity 0 for Note Off
+						{
+							HandleNoteOn(data1, data2);
+						}
+						else
+						{
+							HandleNoteOff(data1);
+						}
+					}
+					// Check if it's a Note Off message (status byte: 0x80)
+					else if ((status & 0xF0) == 0x80)
+					{
+						Debug.WriteLine($"Note Off detected - Note: {data1}");
+						HandleNoteOff(data1);
+					}
+					else
+					{
+						Debug.WriteLine($"Other MIDI message type: {status:X2}");
+					}
+				});
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Error in MIDI callback: {ex.Message}");
+				Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+			}
+		});
 
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn += HandleNoteOn;
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOff += HandleNoteOff;
+		// Connect to the first available MIDI source
+		var sources = midiController.GetAvailableSourcesWithContaining("");
+		Debug.WriteLine($"Available MIDI sources: {sources.Length}");
+		foreach (var source in sources)
+		{
+			Debug.WriteLine($"Found MIDI source: {source}");
+		}
+
+		if (sources.Length > 0)
+		{
+			Debug.WriteLine("Attempting to connect to first MIDI source...");
+			var connected = midiController.ConnectSourceAt(0, out error);
+			Debug.WriteLine($"Connection result: {connected}, Error: {error?.LocalizedDescription ?? "none"}");
+		}
+		else
+		{
+			Debug.WriteLine("No MIDI sources found!");
+		}
+
+		// Store the controller instance as a class field to prevent garbage collection
+		_midiController = midiController;
+
+		var output = midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
+		midiController.ConnectTo(0, out error);
+		
+		byte channel = (byte)0;
+		byte note = (byte)0x10;
+		byte color = (byte)0x05;
+
+		midiController.TurnLightOnChannel(channel, note, color, out error);
 	}
 
 	private void HandleNoteOn(int note, int velocity)
@@ -190,20 +267,16 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 	protected override void OnDisappearing()
 	{
 		try
-        {
-            if (MidiManager.ActiveInputDevices.ContainsKey("APC Key 25"))
-            {
-                var device = MidiManager.ActiveInputDevices["APC Key 25"];
-                if (device != null)
-                {
-                    device.NoteOn -= HandleNoteOn;
-                    device.NoteOff -= HandleNoteOff;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error cleaning up MIDI handlers: {ex.Message}");
-        }
+		{
+			if (_midiController != null)
+			{
+				// Clear the MIDI callback
+				_midiController.SetMIDIReceiveCallback((_, _, _) => { });
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Error cleaning up MIDI controller: {ex.Message}");
+		}
 	}
 }
