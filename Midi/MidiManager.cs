@@ -85,6 +85,17 @@ public static class MidiManager
         }
     }
 
+    public static void TurnOffSelectedLights(Dictionary<byte, byte> lightsToTurnOff)
+    {
+        if (_midiController == null) return;
+
+        NSError? error;
+        foreach (var light in lightsToTurnOff)
+        {
+            _midiController.TurnLightOnChannel((byte)0, light.Key, (byte)0x00, out error);
+        }
+    }
+
     public static void Cleanup()
     {
         if (_midiController != null)

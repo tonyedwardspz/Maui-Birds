@@ -131,6 +131,11 @@ public partial class FlockFortunes : ContentPage
 
 		GuessedBirds?.Add(answer);
 
+		// Switch off the guessed bird's light from both teams
+		var lightConfig = new Dictionary<byte, byte>();
+		lightConfig[(byte)_teamOneBirdButtons[guess]] = 19;
+		lightConfig[(byte)_teamTwoBirdButtons[guess]] = 19;
+		MidiManager.TurnOffSelectedLights(lightConfig);
 
 		Debug.WriteLine($"Answer: {answer.CommonName}");
 		UpdateTeamScore(team, answer.Sightings ?? 0);
@@ -178,29 +183,32 @@ public partial class FlockFortunes : ContentPage
 	}
 
 
-	private void SetupLights()
+	private void SetupLights(Dictionary<byte, byte>? lightConfig = null)
 	{
 		// First turn off all lights
 		MidiManager.SetupLights();
 
-		// Create light configuration for the game
-		var lightConfig = new Dictionary<byte, byte>();
-
-		// Turn on team A and B bird buttons and set to green (19)
-		foreach (var button in _teamOneBirdButtons)
+		if (lightConfig == null)
 		{
-			lightConfig[(byte)button] = 19;
-		}
-		foreach (var button in _teamTwoBirdButtons)
-		{
-			lightConfig[(byte)button] = 19;
-		}
+			// Create light configuration for the game
+			lightConfig = new Dictionary<byte, byte>();
 
-		// Turn on wrong guess lights and set to red (5)
-		lightConfig[34] = 5;
-		lightConfig[35] = 5;
-		lightConfig[36] = 5;
-		lightConfig[37] = 5;
+			// Turn on team A and B bird buttons and set to green (19)
+			foreach (var button in _teamOneBirdButtons)
+			{
+				lightConfig[(byte)button] = 19;
+			}
+			foreach (var button in _teamTwoBirdButtons)
+			{
+				lightConfig[(byte)button] = 19;
+			}
+
+			// Turn on wrong guess lights and set to red (5)
+			lightConfig[34] = 5;
+			lightConfig[35] = 5;
+			lightConfig[36] = 5;
+			lightConfig[37] = 5;
+		}
 
 		MidiManager.SetupGameLights(lightConfig);
 	}

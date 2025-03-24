@@ -19,11 +19,11 @@ public partial class PlayYourBirdsRight : ContentPage
 			OnPropertyChanged(nameof(Birds));
 		}
 	}
-	private ObservableCollection<Bird> TeamABirds { get; set; } = new ObservableCollection<Bird>();
-	private ObservableCollection<Bird> TeamBBirds { get; set; } = new ObservableCollection<Bird>();
-	private bool _teamSelected = false;
-	private bool _hasSelected = false;
-	private bool _guessedHigher = false;
+	private ObservableCollection<Bird> TeamABirds { get; set; } = [];
+	private ObservableCollection<Bird> TeamBBirds { get; set; } = [];
+	private bool _teamSelected;
+	private bool _hasSelected;
+	private bool _guessedHigher;
 	private string CurrentTeam { get; set; } = "A";
 	
 	public PlayYourBirdsRight()
@@ -44,11 +44,11 @@ public partial class PlayYourBirdsRight : ContentPage
 		try
 		{
 			await MidiManager.InitializeAsync();
-			MidiManager.SetMIDICallback((byte status, byte data1, byte data2) =>
+			MidiManager.SetMIDICallback((status, data1, data2) =>
 			{
 				if ((status & 0xF0) == 0x90) // Note On message
 				{
-					HandleNoteOn(data1, data2);
+					HandleNoteOn(data1);
 				}
 				else
 				{
@@ -63,7 +63,7 @@ public partial class PlayYourBirdsRight : ContentPage
 		}
 	}
 
-	private void HandleNoteOn(int note, int velocity)
+	private void HandleNoteOn(int note)
 	{
 		// Game start
 		if (!_teamSelected)
@@ -72,8 +72,12 @@ public partial class PlayYourBirdsRight : ContentPage
 			_teamSelected = true;
 
 			var random = new Random();
-			var randomBird = Birds[random.Next(Birds.Count)];
-			UpdateGameBoard(randomBird);
+			if (Birds != null)
+			{
+				var randomBird = Birds[random.Next(Birds.Count)];
+				UpdateGameBoard(randomBird);
+			}
+
 			return;
 		}
 
@@ -85,22 +89,22 @@ public partial class PlayYourBirdsRight : ContentPage
 		}
 
 		// Bird selected
-		if ((note >= 41 && note <= 72) && !_hasSelected){
+		if (note is >= 41 and <= 72 && !_hasSelected){
 			Debug.WriteLine("Bird Selected");
 			_hasSelected = true;
-		} else if (note >= 41 && note <= 72){
+		} else if (note is >= 41 and <= 72){
 			Debug.WriteLine("Guess in progress");
 			return;
 		}
 
 		// Higher guess
-		if ((note >= 32 && note <= 39)){
+		if (note is >= 32 and <= 39){
 			Debug.WriteLine("Higher Guess");
 			_guessedHigher = true;
 		}
 
 		// Lower guess
-		if ((note >= 0 && note <= 7)){ 
+		if (note is >= 0 and <= 7){ 
 			Debug.WriteLine("Lower Guess");
 			_guessedHigher = false;
 		}
@@ -111,7 +115,7 @@ public partial class PlayYourBirdsRight : ContentPage
 			CalculateAnswer();
 		}
 
-		if ((note >= 41 && note <= 72)){
+		if (note is >= 41 and <= 72){
 			var bird = Birds.FirstOrDefault(b => b.Id == note);
 			UpdateGameBoard(bird);
 
@@ -271,6 +275,19 @@ public partial class PlayYourBirdsRight : ContentPage
 		});
 
         Debug.WriteLine(team);
+
+        // Set up higher and lower lights in green
+        var lightConfig = new Dictionary<byte, byte>();
+        for (byte i = 0; i < 8; i++)  // Lower lights (0-7)
+        {
+            lightConfig[i] = (byte)5;
+        }
+        for (byte i = 32; i < 40; i++)  // Higher lights (32-39)
+        {
+            lightConfig[i] = (byte)1;
+        }
+        SetupLights(lightConfig);
+
         return team;
     }
 
@@ -281,21 +298,37 @@ public partial class PlayYourBirdsRight : ContentPage
 		MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage($"Team {CurrentTeam} wins!")));
     }
 
-	private void SetupLights()
+	private void SetupLights(Dictionary<byte, byte>? lightConfig = null)
 	{
 		// First turn off all lights
 		MidiManager.SetupLights();
 
+		if (lightConfig != null)
+		{
+			MidiManager.SetupGameLights(lightConfig);
+			return;
+		}
+
 		// Create a dictionary of light configurations
-		var lightConfig = new Dictionary<byte, byte>();
+		var defaultConfig = new Dictionary<byte, byte>();
 		
-		// Turn off all lights (0 to 39)
+		byte count = 0;
+		byte color = 1;
 		for (byte i = 0; i < 40; i++)
 		{
-			lightConfig[i] = 0x10;
+			if (count == 4)
+			{
+				count = 1;
+				color = color == 1 ? (byte)5 : (byte)1;
+			}
+			else
+			{
+				count++;
+			}
+			defaultConfig[i] = color;
 		}
 		
-		MidiManager.SetupGameLights(lightConfig);
+		MidiManager.SetupGameLights(defaultConfig);
 	}
 
 	// when the page is disposed, remove the midi event handlers
