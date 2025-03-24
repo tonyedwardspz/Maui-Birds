@@ -2,9 +2,11 @@
 using CommunityToolkit.Maui.Views;
 using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
-using Maui_Birds.Midi;
+// using Maui_Birds.Midi;
 using Maui_Birds.Models;
 using FileSystem = Microsoft.Maui.Storage.FileSystem;
+using NewBindingMaciOS;
+using Foundation;
 
 namespace Maui_Birds.Views;
 
@@ -38,6 +40,8 @@ public partial class FlockFortunes : ContentPage
 	public int teamAWrong = 0;
 	public int teamBWrong = 0;
 
+	private MIDILightController? midiController;
+
 	public FlockFortunes()
 	{
 		InitializeComponent();
@@ -57,20 +61,41 @@ public partial class FlockFortunes : ContentPage
 
 	private async Task InitializeMidiAsync()
 	{
-		var inputs = MidiManager.AvailableInputDevices;
-		await MidiManager.EnsureInputReady("APC Key 25");
+		try
+		{
+			midiController = new MIDILightController();
+			NSError? error;
+			
+			if (!midiController.InitializeAndReturnError(out error))
+			{
+				Debug.WriteLine($"Failed to initialize MIDI: {error?.Description}");
+				return;
+			}
 
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn += HandleNoteOn;
+			var availableSources = midiController.GetAvailableSourcesWithContaining("APC Key 25");
+			if (availableSources.Length > 0)
+			{
+				// Connect to the first matching source
+				if (!midiController.ConnectSourceAt(0, out error))
+				{
+					Debug.WriteLine($"Failed to connect to MIDI source: {error?.Description}");
+					return;
+				}
 
-		// try {
-		// 	var outputs = MidiManager.AvailableOutputDevices;
-		// 	await MidiManager.EnsureOutputReady("APC Key 25");
-
-		// 	await MidiManager.OpenOutput("APC Key 25");
-		// 	MidiManager.ActiveOutputDevices["APC Key 25"].Send(new byte[] { 0, 48, 127 }, 0, 3, 0);
-		// } catch (Exception ex) {
-		// 	Debug.WriteLine($"Error initializing MIDI: {ex.Message}");
-		// }
+				// Set up the callback for MIDI messages
+				midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
+				{
+					if ((status & 0xF0) == 0x90) // Note On message
+					{
+						HandleNoteOn(data1, data2);
+					}
+				});
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Error initializing MIDI: {ex.Message}");
+		}
 	}
 
 	private void HandleNoteOn(int note, int velocity)
@@ -253,20 +278,7 @@ public partial class FlockFortunes : ContentPage
 	// when the page is disposed, remove the midi event handlers
 	protected override void OnDisappearing()
 	{
-		try
-        {
-            if (MidiManager.ActiveInputDevices.ContainsKey("APC Key 25"))
-            {
-                var device = MidiManager.ActiveInputDevices["APC Key 25"];
-                if (device != null)
-                {
-                    device.NoteOn -= HandleNoteOn;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error cleaning up MIDI handlers: {ex.Message}");
-        }
+		midiController?.Dispose();
+		base.OnDisappearing();
 	}
 }

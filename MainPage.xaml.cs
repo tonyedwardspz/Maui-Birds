@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Maui_Birds.Helpers;
-using Maui_Birds.Midi;
+// using Maui_Birds.Midi;
 using Maui_Birds.Models;
 using System.ComponentModel;
 using CommunityToolkit.Maui.Views;
@@ -272,6 +272,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 			{
 				// Clear the MIDI callback
 				_midiController.SetMIDIReceiveCallback((_, _, _) => { });
+				_midiController?.Dispose();
+		base.OnDisappearing();
 			}
 		}
 		catch (Exception ex)

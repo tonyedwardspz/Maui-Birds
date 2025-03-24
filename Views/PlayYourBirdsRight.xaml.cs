@@ -3,8 +3,10 @@ using System.Diagnostics;
 using CommunityToolkit.Maui.Views;
 using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
-using Maui_Birds.Midi;
+// using Maui_Birds.Midi;
 using Maui_Birds.Models;
+using NewBindingMaciOS;
+using Foundation;
 
 namespace Maui_Birds.Views;
 
@@ -27,6 +29,8 @@ public partial class PlayYourBirdsRight : ContentPage
 	private bool GuessedHigher = false;
 	public string CurrentTeam { get; set; } = "A";
 	
+	private MIDILightController? midiController;
+	
 	public PlayYourBirdsRight()
 	{
 		InitializeComponent();
@@ -42,12 +46,41 @@ public partial class PlayYourBirdsRight : ContentPage
 
 	private async Task InitializeMidiAsync()
 	{
-		var inputs = MidiManager.AvailableInputDevices;
-		Debug.WriteLine(inputs.Count);
-		await MidiManager.EnsureInputReady("APC Key 25");
+		try
+		{
+			midiController = new MIDILightController();
+			NSError? error;
+			
+			if (!midiController.InitializeAndReturnError(out error))
+			{
+				Debug.WriteLine($"Failed to initialize MIDI: {error?.Description}");
+				return;
+			}
 
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOn += HandleNoteOn;
-		MidiManager.ActiveInputDevices["APC Key 25"].NoteOff += HandleNoteOff;
+			var availableSources = midiController.GetAvailableSourcesWithContaining("APC Key 25");
+			if (availableSources.Length > 0)
+			{
+				// Connect to the first matching source
+				if (!midiController.ConnectSourceAt(0, out error))
+				{
+					Debug.WriteLine($"Failed to connect to MIDI source: {error?.Description}");
+					return;
+				}
+
+				// Set up the callback for MIDI messages
+				midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
+				{
+					if ((status & 0xF0) == 0x90) // Note On message
+					{
+						HandleNoteOn(data1, data2);
+					}
+				});
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Error initializing MIDI: {ex.Message}");
+		}
 	}
 
 	private void HandleNoteOn(int note, int velocity)
@@ -271,15 +304,9 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		try
         {
-            if (MidiManager.ActiveInputDevices.ContainsKey("APC Key 25"))
-            {
-                var device = MidiManager.ActiveInputDevices["APC Key 25"];
-                if (device != null)
-                {
-                    device.NoteOn -= HandleNoteOn;
-                    device.NoteOff -= HandleNoteOff;
-                }
-            }
+            // The callback will be automatically cleaned up when the MIDILightController
+            // is disposed, so we don't need to explicitly remove it
+            base.OnDisappearing();
         }
         catch (Exception ex)
         {

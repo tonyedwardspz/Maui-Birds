@@ -25,7 +25,7 @@
 		<UserSecretsId>aa604de7-4dd1-4f15-9700-4e950260b819</UserSecretsId>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|ne98.0-ios|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-maccatalyst|AnyCPU'">
@@ -50,20 +50,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.40" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
 
 		<PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="6.0.1" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.1.0" />
 
-		<PackageReference Include="managed-midi" Version="1.10.1" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.40" />
 
 		<!-- <PackageReference Include="Syncfusion.Licensing" Version="28.2.12" />
 		<PackageReference Include="Syncfusion.Maui.Carousel" Version="28.2.12" />
 		<PackageReference Include="Syncfusion.Maui.Core" Version="28.2.12" /> -->
 	</ItemGroup>
 
-	<ItemGroup Condition="$(TargetFramework.Contains('ios')) Or $(TargetFramework.Contains('maccatalyst'))">
+	<ItemGroup>
 		<ProjectReference Include="..\MIDILightControllerInterop\macios\NewBinding.MaciOS.Binding\NewBinding.MaciOS.Binding.csproj">
 		  <ReferenceSourceTarget></ReferenceSourceTarget>
 		</ProjectReference>
