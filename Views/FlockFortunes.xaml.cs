@@ -79,6 +79,7 @@ public partial class FlockFortunes : ContentPage
 					}
 				});
 			}
+			SetupLights();
 		}
 		catch (Exception ex)
 		{
@@ -198,6 +199,31 @@ public partial class FlockFortunes : ContentPage
 		} else {
 			SetCurrentTeam(CurrentTeam);
 		}
+	}
+
+
+	private void SetupLights()
+	{
+		NSError? error;
+		var output = _midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
+		_midiController.ConnectTo(0, out error);
+		
+		// switch off all lights by looping over 0 to 39 in hex
+		for (int i = 0; i < 40; i++){
+			_midiController.TurnLightOnChannel((byte)0, (byte)i, (byte)0x00, out error);
+		}
+		
+		// turn on team A and B bird buttons and set to green
+		for (int i = 0; i < 5; i++){
+			_midiController.TurnLightOnChannel((byte)0, (byte)_teamOneBirdButtons[i], (byte)19, out error);
+			_midiController.TurnLightOnChannel((byte)0, (byte)_teamTwoBirdButtons[i], (byte)19, out error);
+		}
+		
+		// turn on wrong guess lights (34 and 35 for team A, 36 and 37 for team B) and set to red
+		_midiController.TurnLightOnChannel((byte)0, (byte)34, (byte)5, out error);
+		_midiController.TurnLightOnChannel((byte)0, (byte)35, (byte)5, out error);
+		_midiController.TurnLightOnChannel((byte)0, (byte)36, (byte)5, out error);
+		_midiController.TurnLightOnChannel((byte)0, (byte)37, (byte)5, out error);
 	}
 
 	private void GameOver(string result)

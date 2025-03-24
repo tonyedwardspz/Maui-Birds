@@ -178,17 +178,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 			Debug.WriteLine("No MIDI sources found!");
 		}
 
-		// Store the controller instance as a class field to prevent garbage collection
-		_midiController = midiController;
-
-		var output = midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
-		midiController.ConnectTo(0, out error);
-		
-		byte channel = (byte)0;
-		byte note = (byte)0x10;
-		byte color = (byte)0x05;
-
-		midiController.TurnLightOnChannel(channel, note, color, out error);
+		SetupLights();
 	}
 
 	private void HandleNoteOn(int note, int velocity)
@@ -261,6 +251,20 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		{
 			BirdSongPlayer.Stop();
 		});
+	}
+
+	private void SetupLights()
+	{
+		NSError? error;
+		var output = _midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
+		_midiController.ConnectTo(0, out error);
+		
+		// switch off all lights by looping over 0 to 39 in hex
+		for (int i = 0; i < 40; i++){
+			_midiController.TurnLightOnChannel((byte)0, (byte)i, (byte)0x00, out error);
+		}
+		
+		
 	}
 
 	// when the page is disposed, remove the midi event handlers

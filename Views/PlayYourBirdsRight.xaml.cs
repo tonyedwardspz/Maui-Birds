@@ -80,6 +80,7 @@ public partial class PlayYourBirdsRight : ContentPage
 					}
 				});
 			}
+			SetupLights();
 		}
 		catch (Exception ex)
 		{
@@ -304,6 +305,20 @@ public partial class PlayYourBirdsRight : ContentPage
 		Debug.WriteLine("Game over: " + result);
 		MainThread.BeginInvokeOnMainThread(() => this.ShowPopup(new PopupPage($"Team {CurrentTeam} wins!")));
     }
+
+	private void SetupLights()
+	{
+		NSError? error;
+		var output = _midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
+		_midiController.ConnectTo(0, out error);
+		
+		// switch off all lights by looping over 0 to 39 in hex
+		for (int i = 0; i < 40; i++){
+			_midiController.TurnLightOnChannel((byte)0, (byte)i, (byte)0x00, out error);
+		}
+		
+		
+	}
 
 	// when the page is disposed, remove the midi event handlers
 	protected override void OnDisappearing()
