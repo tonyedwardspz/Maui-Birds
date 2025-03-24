@@ -2,11 +2,9 @@
 using CommunityToolkit.Maui.Views;
 using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
-// using Maui_Birds.Midi;
 using Maui_Birds.Models;
 using FileSystem = Microsoft.Maui.Storage.FileSystem;
-using NewBindingMaciOS;
-using Foundation;
+
 
 namespace Maui_Birds.Views;
 
@@ -27,8 +25,6 @@ public partial class FlockFortunes : ContentPage
 	private int _teamBScore = 0;
 	private int _teamAWrong = 0;
 	private int _teamBWrong = 0;
-
-	private MIDILightController? _midiController;
 
 	public FlockFortunes()
 	{
@@ -51,34 +47,14 @@ public partial class FlockFortunes : ContentPage
 	{
 		try
 		{
-			_midiController = new MIDILightController();
-			NSError? error;
-			
-			if (!_midiController.InitializeAndReturnError(out error))
+			await MidiManager.InitializeAsync();
+			MidiManager.SetMIDICallback((byte status, byte data1, byte data2) =>
 			{
-				Debug.WriteLine($"Failed to initialize MIDI: {error?.Description}");
-				return;
-			}
-
-			var availableSources = _midiController.GetAvailableSourcesWithContaining("APC Key 25");
-			if (availableSources.Length > 0)
-			{
-				// Connect to the first matching source
-				if (!_midiController.ConnectSourceAt(0, out error))
+				if ((status & 0xF0) == 0x90) // Note On message
 				{
-					Debug.WriteLine($"Failed to connect to MIDI source: {error?.Description}");
-					return;
+					HandleNoteOn(data1, data2);
 				}
-
-				// Set up the callback for MIDI messages
-				_midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
-				{
-					if ((status & 0xF0) == 0x90) // Note On message
-					{
-						HandleNoteOn(data1, data2);
-					}
-				});
-			}
+			});
 			SetupLights();
 		}
 		catch (Exception ex)
@@ -204,26 +180,29 @@ public partial class FlockFortunes : ContentPage
 
 	private void SetupLights()
 	{
-		NSError? error;
-		var output = _midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
-		_midiController.ConnectTo(0, out error);
-		
-		// switch off all lights by looping over 0 to 39 in hex
-		for (int i = 0; i < 40; i++){
-			_midiController.TurnLightOnChannel((byte)0, (byte)i, (byte)0x00, out error);
+		// First turn off all lights
+		MidiManager.SetupLights();
+
+		// Create light configuration for the game
+		var lightConfig = new Dictionary<byte, byte>();
+
+		// Turn on team A and B bird buttons and set to green (19)
+		foreach (var button in _teamOneBirdButtons)
+		{
+			lightConfig[(byte)button] = 19;
 		}
-		
-		// turn on team A and B bird buttons and set to green
-		for (int i = 0; i < 5; i++){
-			_midiController.TurnLightOnChannel((byte)0, (byte)_teamOneBirdButtons[i], (byte)19, out error);
-			_midiController.TurnLightOnChannel((byte)0, (byte)_teamTwoBirdButtons[i], (byte)19, out error);
+		foreach (var button in _teamTwoBirdButtons)
+		{
+			lightConfig[(byte)button] = 19;
 		}
-		
-		// turn on wrong guess lights (34 and 35 for team A, 36 and 37 for team B) and set to red
-		_midiController.TurnLightOnChannel((byte)0, (byte)34, (byte)5, out error);
-		_midiController.TurnLightOnChannel((byte)0, (byte)35, (byte)5, out error);
-		_midiController.TurnLightOnChannel((byte)0, (byte)36, (byte)5, out error);
-		_midiController.TurnLightOnChannel((byte)0, (byte)37, (byte)5, out error);
+
+		// Turn on wrong guess lights and set to red (5)
+		lightConfig[34] = 5;
+		lightConfig[35] = 5;
+		lightConfig[36] = 5;
+		lightConfig[37] = 5;
+
+		MidiManager.SetupGameLights(lightConfig);
 	}
 
 	private void GameOver(string result)
@@ -291,7 +270,7 @@ public partial class FlockFortunes : ContentPage
     
 	protected override void OnDisappearing()
 	{
-		_midiController?.Dispose();
+		MidiManager.Cleanup();
 		base.OnDisappearing();
 	}
 }

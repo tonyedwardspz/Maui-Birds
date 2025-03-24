@@ -8,9 +8,6 @@ public partial class App : Application
 
     public App()
 	{
-        Config = ConfigHelper.LoadConfig("appsettings.json").Result;
-        // Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Config.SyncFusionLicence);
-
         InitializeComponent();
 	}
 

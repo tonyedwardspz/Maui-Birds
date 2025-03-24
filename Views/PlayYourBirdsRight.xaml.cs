@@ -3,10 +3,7 @@ using System.Diagnostics;
 using CommunityToolkit.Maui.Views;
 using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
-// using Maui_Birds.Midi;
 using Maui_Birds.Models;
-using NewBindingMaciOS;
-using Foundation;
 
 namespace Maui_Birds.Views;
 
@@ -29,8 +26,6 @@ public partial class PlayYourBirdsRight : ContentPage
 	private bool _guessedHigher = false;
 	private string CurrentTeam { get; set; } = "A";
 	
-	private MIDILightController? _midiController;
-	
 	public PlayYourBirdsRight()
 	{
 		InitializeComponent();
@@ -48,38 +43,18 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		try
 		{
-			_midiController = new MIDILightController();
-			NSError? error;
-			
-			if (!_midiController.InitializeAndReturnError(out error))
+			await MidiManager.InitializeAsync();
+			MidiManager.SetMIDICallback((byte status, byte data1, byte data2) =>
 			{
-				Debug.WriteLine($"Failed to initialize MIDI: {error?.Description}");
-				return;
-			}
-
-			var availableSources = _midiController.GetAvailableSourcesWithContaining("APC Key 25");
-			if (availableSources.Length > 0)
-			{
-				// Connect to the first matching source
-				if (!_midiController.ConnectSourceAt(0, out error))
+				if ((status & 0xF0) == 0x90) // Note On message
 				{
-					Debug.WriteLine($"Failed to connect to MIDI source: {error?.Description}");
-					return;
+					HandleNoteOn(data1, data2);
 				}
-
-				// Set up the callback for MIDI messages
-				_midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
+				else
 				{
-					if ((status & 0xF0) == 0x90) // Note On message
-					{
-						HandleNoteOn(data1, data2);
-					}
-					else
-					{
-						Debug.WriteLine($"Other MIDI message type: {status:X2}");
-					}
-				});
-			}
+					Debug.WriteLine($"Other MIDI message type: {status:X2}");
+				}
+			});
 			SetupLights();
 		}
 		catch (Exception ex)
@@ -308,16 +283,19 @@ public partial class PlayYourBirdsRight : ContentPage
 
 	private void SetupLights()
 	{
-		NSError? error;
-		var output = _midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
-		_midiController.ConnectTo(0, out error);
+		// First turn off all lights
+		MidiManager.SetupLights();
+
+		// Create a dictionary of light configurations
+		var lightConfig = new Dictionary<byte, byte>();
 		
-		// switch off all lights by looping over 0 to 39 in hex
-		for (int i = 0; i < 40; i++){
-			_midiController.TurnLightOnChannel((byte)0, (byte)i, (byte)0x00, out error);
+		// Turn off all lights (0 to 39)
+		for (byte i = 0; i < 40; i++)
+		{
+			lightConfig[i] = 0x10;
 		}
 		
-		
+		MidiManager.SetupGameLights(lightConfig);
 	}
 
 	// when the page is disposed, remove the midi event handlers
@@ -325,7 +303,7 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		try
         {
-	        _midiController?.Dispose();
+	        MidiManager.Cleanup();
             base.OnDisappearing();
         }
         catch (Exception ex)

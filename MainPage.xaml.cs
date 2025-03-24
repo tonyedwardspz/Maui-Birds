@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics;
 using Maui_Birds.Helpers;
-// using Maui_Birds.Midi;
 using Maui_Birds.Models;
 using System.ComponentModel;
 using CommunityToolkit.Maui.Views;
-using Foundation;
-using NewBindingMaciOS;
 
 namespace Maui_Birds;
 
@@ -89,8 +86,6 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	public Audience Audience { get; set; }
 
-	private MIDILightController _midiController;
-
 	public MainPage()
 	{
 		InitializeComponent();
@@ -98,8 +93,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 		Audience = new Audience(1);
 
-        _ = LoadBirdsAsync();
-        _ = InitializeMidiAsync();
+		_ = LoadBirdsAsync();
+		_ = InitializeMidiAsync();
 	}
 
 	private async Task LoadBirdsAsync()
@@ -110,75 +105,40 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	private async Task InitializeMidiAsync()
 	{
-		NSError? error;
-		var midiController = new MIDILightController();
-		Debug.WriteLine("Initializing MIDI controller...");
-		var initialized = midiController.InitializeAndReturnError(out error);
-		Debug.WriteLine($"MIDI controller initialized: {initialized}, Error: {error?.LocalizedDescription ?? "none"}");
-		
-		// Setup MIDI input callback
-		Debug.WriteLine("Setting up MIDI callback...");
-		midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
+		// Set up the MIDI callback
+		MidiManager.SetMIDICallback((status, data1, data2) =>
 		{
-			try
+			MainThread.BeginInvokeOnMainThread(() =>
 			{
-				Debug.WriteLine("=== MIDI Callback Triggered ===");
-				Debug.WriteLine($"Raw MIDI Message - Status: {status:X2}, Data1: {data1:X2}, Data2: {data2:X2}");
-				
-				MainThread.BeginInvokeOnMainThread(() =>
+				// Check if it's a Note On message (status byte: 0x90)
+				if ((status & 0xF0) == 0x90)
 				{
-					// Check if it's a Note On message (status byte: 0x90)
-					if ((status & 0xF0) == 0x90)
+					Debug.WriteLine($"Note On detected - Note: {data1}, Velocity: {data2}");
+					if (data2 > 0) // Some devices send Note On with velocity 0 for Note Off
 					{
-						Debug.WriteLine($"Note On detected - Note: {data1}, Velocity: {data2}");
-						if (data2 > 0) // Some devices send Note On with velocity 0 for Note Off
-						{
-							HandleNoteOn(data1, data2);
-						}
-						else
-						{
-							HandleNoteOff(data1);
-						}
-					}
-					// Check if it's a Note Off message (status byte: 0x80)
-					else if ((status & 0xF0) == 0x80)
-					{
-						Debug.WriteLine($"Note Off detected - Note: {data1}");
-						HandleNoteOff(data1);
+						HandleNoteOn(data1, data2);
 					}
 					else
 					{
-						Debug.WriteLine($"Other MIDI message type: {status:X2}");
+						HandleNoteOff(data1);
 					}
-				});
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine($"Error in MIDI callback: {ex.Message}");
-				Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-			}
+				}
+				// Check if it's a Note Off message (status byte: 0x80)
+				else if ((status & 0xF0) == 0x80)
+				{
+					Debug.WriteLine($"Note Off detected - Note: {data1}");
+					HandleNoteOff(data1);
+				}
+				else
+				{
+					Debug.WriteLine($"Other MIDI message type: {status:X2}");
+				}
+			});
 		});
 
-		// Connect to the first available MIDI source
-		var sources = midiController.GetAvailableSourcesWithContaining("");
-		Debug.WriteLine($"Available MIDI sources: {sources.Length}");
-		foreach (var source in sources)
-		{
-			Debug.WriteLine($"Found MIDI source: {source}");
-		}
-
-		if (sources.Length > 0)
-		{
-			Debug.WriteLine("Attempting to connect to first MIDI source...");
-			var connected = midiController.ConnectSourceAt(0, out error);
-			Debug.WriteLine($"Connection result: {connected}, Error: {error?.LocalizedDescription ?? "none"}");
-		}
-		else
-		{
-			Debug.WriteLine("No MIDI sources found!");
-		}
-
-		SetupLights();
+		// Initialize MIDI
+		await MidiManager.InitializeAsync();
+		MidiManager.SetupLights();
 	}
 
 	private void HandleNoteOn(int note, int velocity)
@@ -253,36 +213,10 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		});
 	}
 
-	private void SetupLights()
-	{
-		NSError? error;
-		var output = _midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
-		_midiController.ConnectTo(0, out error);
-		
-		// switch off all lights by looping over 0 to 39 in hex
-		for (int i = 0; i < 40; i++){
-			_midiController.TurnLightOnChannel((byte)0, (byte)i, (byte)0x00, out error);
-		}
-		
-		
-	}
-
-	// when the page is disposed, remove the midi event handlers
 	protected override void OnDisappearing()
 	{
-		try
-		{
-			if (_midiController != null)
-			{
-				// Clear the MIDI callback
-				_midiController.SetMIDIReceiveCallback((_, _, _) => { });
-				_midiController?.Dispose();
+
+		MidiManager.Cleanup();
 		base.OnDisappearing();
-			}
-		}
-		catch (Exception ex)
-		{
-			Debug.WriteLine($"Error cleaning up MIDI controller: {ex.Message}");
-		}
 	}
 }

@@ -1,69 +1,98 @@
-// // Basically taken from the Buddah project
-// // https://github.com/eidetic-av/Buddah/blob/master/Buddah/Midi/MidiManager.cs
-//
-// using Commons.Music.Midi;
-// using System.Diagnostics;
-//
-// namespace Maui_Birds.Midi;
-//
-// public static class MidiManager
-// {
-//     public static IMidiAccess AccessManager { get; private set; }
-//
-//     public static List<IMidiPortDetails> AvailableInputDevices => AccessManager.Inputs.ToList();
-//     public static List<IMidiPortDetails> AvailableOutputDevices => AccessManager.Outputs.ToList();
-//
-//     public static Dictionary<string, MidiInputDevice> ActiveInputDevices { get; private set; } = new Dictionary<string, MidiInputDevice>();
-//     public static Dictionary<string, MidiOutputDevice> ActiveOutputDevices { get; private set; } = new Dictionary<string, MidiOutputDevice>();
-//
-//     static MidiManager()
-//     {
-//         AccessManager = MidiAccessManager.Default;
-//         Debug.WriteLine("Available MIDI Inputs ({0}): ", AvailableInputDevices.Count());
-//         AvailableInputDevices.ForEach(i => Debug.WriteLine("    " + i.Name));
-//         Debug.WriteLine("");
-//     }
-//
-//     public static async Task<bool> OpenInput(string inputDeviceName)
-//     {
-//         var inputInfo = AvailableInputDevices.SingleOrDefault(i => i.Name.ToLower() == inputDeviceName.ToLower());
-//         if (inputInfo == default) return false;
-//         ActiveInputDevices[inputDeviceName] = new MidiInputDevice(await AccessManager.OpenInputAsync(inputInfo.Id));
-//         Debug.WriteLine($"Successfully opened input device {0}", inputDeviceName);
-//         return true;
-//     }
-//
-//     public static async Task<bool> EnsureInputReady(string inputDeviceName)
-//     {
-//         if (ActiveInputDevices.ContainsKey(inputDeviceName)) return true;
-//         var opened = await OpenInput(inputDeviceName);
-//         if (!opened && ActiveInputDevices.ContainsKey(inputDeviceName))
-//             ActiveInputDevices.Remove(inputDeviceName);
-//         return opened;
-//     }
-//
-//     public static async Task<bool> OpenOutput(string outputDeviceName)
-//     {
-//         var outputInfo = AvailableOutputDevices.SingleOrDefault(o => o.Name.ToLower() == outputDeviceName.ToLower());
-//         if (outputInfo == default) return false;
-//         ActiveOutputDevices[outputDeviceName] = new MidiOutputDevice(await AccessManager.OpenOutputAsync(outputInfo.Id));
-//         Debug.WriteLine($"Successfully opened output device {outputDeviceName}");
-//         return true;
-//     }
-//
-//     public static async Task<bool> EnsureOutputReady(string outputDeviceName)
-//     {
-//         if (ActiveOutputDevices.ContainsKey(outputDeviceName)) return true;
-//         var opened = await OpenOutput(outputDeviceName);
-//         if (!opened && ActiveOutputDevices.ContainsKey(outputDeviceName))
-//             ActiveOutputDevices.Remove(outputDeviceName);
-//         Debug.WriteLine($"Successfully ensured output device {outputDeviceName} is ready");
-//         return opened;
-//     }
-//
-//     public static void Close()
-//     {
-//         Debug.WriteLine("Closing Midi Devices");
-//         foreach (var input in ActiveInputDevices) input.Value.Close();
-//     }
-// }
+using Foundation;
+using NewBindingMaciOS;
+using System.Diagnostics;
+using System.Collections.Generic;
+
+public static class MidiManager
+{
+    private static MIDILightController? _midiController;
+    private static Action<byte, byte, byte>? _midiCallback;
+
+    public static void SetMIDICallback(Action<byte, byte, byte> callback)
+    {
+        _midiCallback = callback;
+    }
+
+    public static async Task InitializeAsync()
+    {
+        NSError? error;
+        _midiController = new MIDILightController();
+        Debug.WriteLine("Initializing MIDI controller...");
+        var initialized = _midiController.InitializeAndReturnError(out error);
+        Debug.WriteLine($"MIDI controller initialized: {initialized}, Error: {error?.LocalizedDescription ?? "none"}");
+        
+        // Setup MIDI input callback
+        Debug.WriteLine("Setting up MIDI callback...");
+        _midiController.SetMIDIReceiveCallback((byte status, byte data1, byte data2) =>
+        {
+            try
+            {
+                Debug.WriteLine("=== MIDI Callback Triggered ===");
+                Debug.WriteLine($"Raw MIDI Message - Status: {status:X2}, Data1: {data1:X2}, Data2: {data2:X2}");
+                
+                _midiCallback?.Invoke(status, data1, data2);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in MIDI callback: {ex.Message}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            }
+        });
+
+        // Connect to the first available MIDI source
+        var sources = _midiController.GetAvailableSourcesWithContaining("");
+        Debug.WriteLine($"Available MIDI sources: {sources.Length}");
+        foreach (var source in sources)
+        {
+            Debug.WriteLine($"Found MIDI source: {source}");
+        }
+
+        if (sources.Length > 0)
+        {
+            Debug.WriteLine("Attempting to connect to first MIDI source...");
+            var connected = _midiController.ConnectSourceAt(0, out error);
+            Debug.WriteLine($"Connection result: {connected}, Error: {error?.LocalizedDescription ?? "none"}");
+        }
+        else
+        {
+            Debug.WriteLine("No MIDI sources found!");
+        }
+    }
+
+    public static void SetupLights()
+    {
+        if (_midiController == null) return;
+
+        NSError? error;
+        var output = _midiController.GetAvailableDevicesWithContaining("Does not matter")[0];
+        _midiController.ConnectTo(0, out error);
+        
+        // switch off all lights by looping over 0 to 39 in hex
+        for (int i = 0; i < 40; i++)
+        {
+            _midiController.TurnLightOnChannel((byte)0, (byte)i, (byte)0x00, out error);
+        }
+    }
+
+    public static void SetupGameLights(Dictionary<byte, byte> lightConfig)
+    {
+        if (_midiController == null) return;
+
+        NSError? error;
+        foreach (var light in lightConfig)
+        {
+            _midiController.TurnLightOnChannel((byte)0, light.Key, light.Value, out error);
+        }
+    }
+
+    public static void Cleanup()
+    {
+        if (_midiController != null)
+        {
+            // Clear the MIDI callback
+            _midiController.SetMIDIReceiveCallback((_, _, _) => { });
+            _midiController.Dispose();
+            _midiController = null;
+        }
+    }
+}
