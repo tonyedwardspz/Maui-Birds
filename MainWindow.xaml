@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:local="clr-namespace:Maui_Birds"
+        x:Class="Maui_Birds.MainWindow">
+    <Window.Page>
+        <local:AppShell />
+    </Window.Page>
+    <Window.TitleBar>
+        <TitleBar x:Name="titleBar"
+                  Title="MAUI Birds"
+                  IsVisible="True"
+                  BackgroundColor="#512BD4"
+                  ForegroundColor="White"                  
+                  HeightRequest="48">
+            <TitleBar.Content>
+                <VerticalStackLayout>
+                    
+                    <SearchBar Placeholder="Search"
+                               PlaceholderColor="White"
+                               MaximumWidthRequest="300"
+                               HorizontalOptions="Fill"
+                               VerticalOptions="Center"
+                               TextChanged="OnSearchBarTextChanged"/>
+                </VerticalStackLayout>
+                
+            </TitleBar.Content>            
+        </TitleBar>
+
+    </Window.TitleBar>
+</Window>

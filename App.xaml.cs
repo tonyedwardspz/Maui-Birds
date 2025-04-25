@@ -1,4 +1,4 @@
-﻿using Maui_Birds.Helpers;
+using Maui_Birds.Helpers;
 
 namespace Maui_Birds;
 
@@ -13,7 +13,7 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell());
+        return new MainWindow();
     }
 }
 
