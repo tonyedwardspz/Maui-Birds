@@ -4,6 +4,7 @@ using CommunityToolkit.Maui.Views;
 using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
 using Maui_Birds.Models;
+using Maui_Birds.Services;
 
 namespace Maui_Birds.Views;
 
@@ -19,6 +20,8 @@ public partial class PlayYourBirdsRight : ContentPage
 			OnPropertyChanged(nameof(Birds));
 		}
 	}
+
+	private readonly BirdSearchService _birdSearchService;
 	private ObservableCollection<Bird> TeamABirds { get; set; } = [];
 	private ObservableCollection<Bird> TeamBBirds { get; set; } = [];
 	private bool _teamSelected;
@@ -30,13 +33,11 @@ public partial class PlayYourBirdsRight : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = this;
-        _ = LoadBirdsAsync();
-        _ = InitializeMidiAsync();
-	}
 
-	private async Task LoadBirdsAsync()
-	{
-		Birds = await BirdHelper.LoadConfig("data.json");
+		_birdSearchService = BirdSearchService.Instance;
+
+        Birds = _birdSearchService.AllBirds;
+        _ = InitializeMidiAsync();
 	}
 
 	private async Task InitializeMidiAsync()

@@ -3,6 +3,7 @@ using Maui_Birds.Helpers;
 using Maui_Birds.Models;
 using System.ComponentModel;
 using CommunityToolkit.Maui.Views;
+using Maui_Birds.Services;
 
 namespace Maui_Birds;
 
@@ -72,6 +73,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 	}
 
 	public List<Bird> Birds { get; set; }
+	private readonly BirdSearchService _birdSearchService;
 
 	private List<ImageSource> _birdImages = new List<ImageSource>();
 	public List<ImageSource> BirdImages 
@@ -92,15 +94,10 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		BindingContext = this;
 
 		Audience = new Audience(1);
+		_birdSearchService = BirdSearchService.Instance;
+		Birds = _birdSearchService.AllBirds;
 
-		_ = LoadBirdsAsync();
 		_ = InitializeMidiAsync();
-	}
-
-	private async Task LoadBirdsAsync()
-	{
-		Birds = await BirdHelper.LoadConfig("data.json");
-		Debug.WriteLine(Birds.Count);
 	}
 
 	private async Task InitializeMidiAsync()

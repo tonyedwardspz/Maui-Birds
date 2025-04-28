@@ -21,9 +21,8 @@
                                MinimumWidthRequest="500"
                                HorizontalOptions="Fill"
                                VerticalOptions="Center"
-                               Margin="200, 0, 200, 0"
+                               Margin="150, 0, 200, 0"
                                TextChanged="OnSearchBarTextChanged"/>
-                    <ListView x:Name="searchResults" />
                 </VerticalStackLayout>
                 
             </TitleBar.Content>            

@@ -9,7 +9,7 @@ namespace Maui_Birds.Services;
 public class BirdSearchService
 {
     public ObservableCollection<Bird> SearchBirds { get; set; } = new ObservableCollection<Bird>();
-    private List<Bird>? AllBirds { get; set; }
+    public List<Bird>? AllBirds { get; set; }
 
     private static BirdSearchService? _instance;
     public static BirdSearchService Instance => _instance ??= new BirdSearchService();

@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Views;
 using Maui_Birds.Controls;
 using Maui_Birds.Helpers;
 using Maui_Birds.Models;
+using Maui_Birds.Services;
 using FileSystem = Microsoft.Maui.Storage.FileSystem;
 
 
@@ -12,6 +13,7 @@ public partial class FlockFortunes : ContentPage
 {
 	private List<Bird>? Birds { get; set; }
 	private List<Bird>? GuessedBirds { get; init; }
+	private readonly BirdSearchService _birdSearchService;
 
 	private bool _hasGameStarted = false;
 	private bool _teamSelected = false;
@@ -31,16 +33,12 @@ public partial class FlockFortunes : ContentPage
 		InitializeComponent();
 		BindingContext = this;
 
+		_birdSearchService = BirdSearchService.Instance;
+
 		GuessedBirds = [];
 
-        _ = LoadBirdsAsync();
+		Birds = _birdSearchService.AllBirds?.OrderByDescending(b => b.Sightings).ToList().Take(5).ToList();
         _ = InitializeMidiAsync();
-	}
-
-	private async Task LoadBirdsAsync()
-	{
-		Birds = await BirdHelper.LoadConfig("data.json");
-		Birds = Birds.OrderByDescending(b => b.Sightings).ToList().Take(5).ToList();
 	}
 
 	private async Task InitializeMidiAsync()
