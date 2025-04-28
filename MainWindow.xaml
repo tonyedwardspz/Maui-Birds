@@ -18,9 +18,10 @@
                     
                     <SearchBar Placeholder="Search"
                                PlaceholderColor="White"
-                               MaximumWidthRequest="300"
+                               MinimumWidthRequest="500"
                                HorizontalOptions="Fill"
                                VerticalOptions="Center"
+                               Margin="200, 0, 200, 0"
                                TextChanged="OnSearchBarTextChanged"/>
                     <ListView x:Name="searchResults" />
                 </VerticalStackLayout>

@@ -36,12 +36,12 @@ public partial class MainWindow : Window
         
         if (!string.IsNullOrWhiteSpace(e.NewTextValue))
         {
-            var searchResults = _birdSearchService.Search(e.NewTextValue);
-            var navigationParameter = new Dictionary<string, object>
+            _birdSearchService.Search(e.NewTextValue);
+            
+            if (Shell.Current.CurrentPage is not BirdSearchView)
             {
-                { "BirdService", _birdSearchService }
-            };
-            await Shell.Current.GoToAsync("BirdSearchView", navigationParameter);
+                await Shell.Current.GoToAsync("BirdSearchView", false);
+            }
         }
     }
 }

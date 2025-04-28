@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using CommunityToolkit.Maui.Core.Extensions;
 using Maui_Birds.Helpers;
 using Maui_Birds.Models;
 
@@ -7,7 +8,7 @@ namespace Maui_Birds.Services;
 
 public class BirdSearchService
 {
-    public List<Bird>? SearchBirds { get; set; } = [];
+    public ObservableCollection<Bird> SearchBirds { get; set; } = new ObservableCollection<Bird>();
     private List<Bird>? AllBirds { get; set; }
 
     private static BirdSearchService? _instance;
@@ -22,18 +23,19 @@ public class BirdSearchService
     {
         AllBirds = await BirdHelper.LoadConfig("data.json");
     }
-
-    // Optional: search birds by name
-    public IEnumerable<Bird> Search(string query)
+    
+    public void Search(string query)
     {
-        //return Birds.Where(b => b.CommonName.Contains(query, StringComparison.OrdinalIgnoreCase));
-        
-        SearchBirds = AllBirds
+        SearchBirds.Clear();
+        var results = AllBirds
             .Where(bird => bird.CommonName.ToLower().Contains(query.ToLower()))
-            .ToList<Bird>();
+            .ToList();
+            
+        foreach (var bird in results)
+        {
+            SearchBirds.Add(bird);
+        }
         
         Debug.WriteLine("Results length: " + SearchBirds.Count);
-
-        return SearchBirds;
     }
 }

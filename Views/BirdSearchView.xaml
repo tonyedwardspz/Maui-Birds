@@ -2,15 +2,36 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Maui_Birds.Views.BirdSearchView">
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:models="clr-namespace:Maui_Birds.Models"
+             x:Class="Maui_Birds.Views.BirdSearchView"
+             Title="Bird Search">
     <ContentPage.Content>
         <Grid>
-            <CollectionView ItemsSource="{Binding BirdService.SearchBirds}">
+            <toolkit:MediaElement
+                x:Name="AudioPlayer"
+                ShouldShowPlaybackControls="False"
+                HeightRequest="1"
+                WidthRequest="1"
+                Volume="1"/>
+                
+            <CollectionView ItemsSource="{Binding BirdService.SearchBirds}"
+                           SelectionMode="Single"
+                           SelectionChanged="OnBirdSelected">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Label Text="{Binding CommonName}" 
-                               Margin="10"
-                               FontSize="16"/>
+                    <DataTemplate x:DataType="models:Bird">
+                        <Grid Padding="40" 
+                              ColumnDefinitions="400, 250" 
+                              HorizontalOptions="Center"
+                              RowDefinitions="60,30,30, Auto">
+                            <Image Source="{Binding ImageFilename}" Grid.Column="2" Grid.RowSpan="4"/>
+                            
+                            <Label Text="{Binding CommonName}" 
+                                   FontSize="16"
+                                   Grid.Row="0"/>
+                            <Label Text="{Binding StringFormat ='Sightings: {0}', Path=Sightings}" Grid.Row="1" FontSize="16"/>
+                            <Label Text="{Binding StringFormat='Image Credit: {0}', Path=ImageCredit}" Grid.Row="2" FontSize="16"/>
+                        </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

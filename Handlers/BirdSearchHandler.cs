@@ -10,20 +10,20 @@ public class BirdSearchHandler: SearchHandler
     
     protected override void OnQueryChanged(string oldValue, string newValue)
     {
-        base.OnQueryChanged(oldValue, newValue);
+        // base.OnQueryChanged(oldValue, newValue);
         
-        Debug.WriteLine("Search Made");
+        // Debug.WriteLine("Search Made");
 
-        if (string.IsNullOrWhiteSpace(newValue))
-        {
-            ItemsSource = null;
-        }
-        else
-        {
-            ItemsSource = Birds
-                .Where(bird => bird.CommonName.ToLower().Contains(newValue.ToLower()))
-                .ToList<Bird>();
-        }
+        // if (string.IsNullOrWhiteSpace(newValue))
+        // {
+        //     ItemsSource = null;
+        // }
+        // else
+        // {
+        //     ItemsSource = Birds
+        //         .Where(bird => bird.CommonName.ToLower().Contains(newValue.ToLower()))
+        //         .ToList<Bird>();
+        // }
     }
 
     protected override async void OnItemSelected(object item)
@@ -35,6 +35,5 @@ public class BirdSearchHandler: SearchHandler
     {
         Debug.WriteLine("Search Item Navigated");
         return "MainPage";
-        // return (Shell.Current as AppShell).Routes.FirstOrDefault(route => route.Value.Equals(SelectedItemNavigationTarget)).Key;
     }
 }
