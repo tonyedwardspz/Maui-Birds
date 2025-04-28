@@ -22,6 +22,7 @@
                                HorizontalOptions="Fill"
                                VerticalOptions="Center"
                                TextChanged="OnSearchBarTextChanged"/>
+                    <ListView x:Name="searchResults" />
                 </VerticalStackLayout>
                 
             </TitleBar.Content>            

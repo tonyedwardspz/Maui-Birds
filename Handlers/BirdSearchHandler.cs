@@ -34,7 +34,7 @@ public class BirdSearchHandler: SearchHandler
     string GetNavigationTarget()
     {
         Debug.WriteLine("Search Item Navigated");
-        
-        return (Shell.Current as AppShell).Routes.FirstOrDefault(route => route.Value.Equals(SelectedItemNavigationTarget)).Key;
+        return "MainPage";
+        // return (Shell.Current as AppShell).Routes.FirstOrDefault(route => route.Value.Equals(SelectedItemNavigationTarget)).Key;
     }
 }

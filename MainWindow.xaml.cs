@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Maui_Birds.Helpers;
 using Maui_Birds.Models;
+using Maui_Birds.Services;
+using Maui_Birds.Views;
 
 namespace Maui_Birds;
 
@@ -13,11 +15,12 @@ public partial class MainWindow : Window
 {
     public IList<Bird> Birds { get; set; }
     public IList<Bird> Results { get; set; }
+    private readonly BirdSearchService _birdSearchService;
     
     public MainWindow()
     {
         InitializeComponent();
-
+        _birdSearchService = BirdSearchService.Instance;
         _ = LoadBirdsAsync();
     }
     
@@ -27,16 +30,18 @@ public partial class MainWindow : Window
         Debug.WriteLine(Birds.Count);
     }
     
-    private void OnSearchBarTextChanged(object sender, TextChangedEventArgs e)
+    private async void OnSearchBarTextChanged(object sender, TextChangedEventArgs e)
     {
         Debug.WriteLine("Search text changed: " + e.NewTextValue);
-
-        Results = Birds
-            .Where(bird => bird.CommonName.ToLower().Contains(e.NewTextValue.ToLower()))
-            .ToList<Bird>();
-
-        // searchResults.ItemsSource = Results;
         
-        Debug.WriteLine("Results length: " + Results.Count);
+        if (!string.IsNullOrWhiteSpace(e.NewTextValue))
+        {
+            var searchResults = _birdSearchService.Search(e.NewTextValue);
+            var navigationParameter = new Dictionary<string, object>
+            {
+                { "BirdService", _birdSearchService }
+            };
+            await Shell.Current.GoToAsync("BirdSearchView", navigationParameter);
+        }
     }
 }
