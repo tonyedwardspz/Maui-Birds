@@ -2,8 +2,68 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Maui_Birds.Views.WheelOfFeathersView">
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Shell.NavBarIsVisible="True"
+             x:Class="Maui_Birds.Views.WheelOfFeathersView"
+             Title="Wheel of Feathers">
     <ContentPage.Content>
+        <VerticalStackLayout Spacing="20" Padding="20" WidthRequest="500">
+            
+            <!-- Player Turn Indicator -->
+            <Border BackgroundColor="DodgerBlue" 
+                   Padding="10" 
+                   HorizontalOptions="Center">
+                <Label x:Name="CurrentPlayerLabel" 
+                       Text="Player 1's Turn" 
+                       FontSize="20"/>
+            </Border>
+
+            <!-- Hidden Phrase Grid -->
+            <Grid x:Name="PhraseGrid" 
+                  Row="1"
+                  ColumnSpacing="5" 
+                  RowSpacing="5" 
+                  
+                  HorizontalOptions="Center"
+                  HeightRequest="400">
+            </Grid>
+
+            <!-- Letter Input Section -->
+            <Border BackgroundColor="DodgerBlue" 
+                   Padding="15" 
+                   HorizontalOptions="Center"
+                   Margin="0,50,0,0">
+                <VerticalStackLayout Spacing="10" WidthRequest="300">
+                    <Label Text="Enter a letter:" 
+                           FontSize="16"/>
+                    <Entry x:Name="LetterEntry" 
+                           WidthRequest="100" 
+                           MaxLength="1" 
+                           HorizontalOptions="Center" 
+                           FontSize="24"
+                           BackgroundColor="White"
+                           TextColor="Black"
+                           Completed="OnLetterEntryCompleted"/>
+                    <Button Text="Guess" 
+                            Clicked="OnGuessButtonClicked" 
+                            HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- New Game Button -->
+            <Button Text="New Game" 
+                    Clicked="OnNewGameButtonClicked" 
+                    HorizontalOptions="Center" 
+                    BackgroundColor="Green" 
+                    TextColor="White"/>
+            
+            <toolkit:MediaElement
+                x:Name="AudioPlayer"
+                ShouldShowPlaybackControls="False"
+                HeightRequest="1"
+                WidthRequest="1"
+                Volume="1"/>
+        </VerticalStackLayout>
         
     </ContentPage.Content>
 </ContentPage>

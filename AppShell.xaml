@@ -23,6 +23,11 @@
         Title="Play Your Birds Right"
         ContentTemplate="{DataTemplate views:PlayYourBirdsRight}"
         Route="PlayYourBirdsRight" />
+    
+    <ShellContent
+        Title="Wheel of Feathers"
+        ContentTemplate="{DataTemplate views:WheelOfFeathersView}"
+        Route="WheelOfFeathersView" />
 
 </Shell>
 

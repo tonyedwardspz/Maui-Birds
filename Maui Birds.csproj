@@ -99,6 +99,11 @@
 	  <None Remove="Resources\Raw\incorrect.mp3" />
 	  <None Remove="Resources\Raw\team_buzzer.mp3" />
 
+	  <None Remove="Resources\Raw\letter_reveal.mp3" />
+	  <None Remove="Resources\Raw\puzzle_reveal.mp3" />
+	  <None Remove="Resources\Raw\puzzle_complete.mp3" />
+	  <None Remove="Resources\Raw\letter_wrong.mp3" />
+	  
 	  <None Remove="Resources\Images\blackbird.jpg" />
 	  <None Remove="Resources\Images\blue_tit.jpg" />
 	  <None Remove="Resources\Images\buzzard.jpg" />
@@ -124,7 +129,9 @@
 	  <None Remove="Resources\Images\tawny_owl.jpg" />
 	  <None Remove="Resources\Images\wood_pigeon.jpg" />
 	  <None Remove="Resources\Images\wren.jpg" />
+
 	  <None Remove="Resources\Raw\data.json" />
+	  
 	  <None Remove="Models\" />
 	  <None Remove="Views\" />
 	  <None Remove="Controls\" />
