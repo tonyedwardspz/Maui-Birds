@@ -75,25 +75,23 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 	public List<Bird> Birds { get; set; }
 	private readonly BirdSearchService _birdSearchService;
 
-	private List<ImageSource> _birdImages = new List<ImageSource>();
-	public List<ImageSource> BirdImages 
+	private List<Bird> _selectedBirds = new List<Bird>();
+	public List<Bird> SelectedBirds 
 	{ 
-		get => _birdImages;
+		get => _selectedBirds;
 		set
 		{
-			_birdImages = value;
-			OnPropertyChanged(nameof(BirdImages));
+			_selectedBirds = value;
+			OnPropertyChanged(nameof(SelectedBirds));
 		}
 	}
-
-	public Audience Audience { get; set; }
 
 	public MainPage()
 	{
 		InitializeComponent();
 		BindingContext = this;
 
-		Audience = new Audience(1);
+		//Audience = new Audience(1);
 		_birdSearchService = BirdSearchService.Instance;
 		Birds = _birdSearchService.AllBirds;
 
@@ -144,10 +142,12 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		var bird = Birds.FirstOrDefault(b => b.Id == note);
 
 		if (CurrentBirdImage != null){
-			BirdImages.Add(CurrentBirdImage);
-			var tempList = BirdImages.ToList();
-			BirdImages = new List<ImageSource>(tempList);
-			OnPropertyChanged(nameof(BirdImages));
+
+			SelectedBirds.Insert(0, bird);
+			var tempBirds = SelectedBirds.ToList();
+			SelectedBirds = new List<Bird>(tempBirds);
+			OnPropertyChanged(nameof(SelectedBirds));
+
 		} else {
 			try
 			{

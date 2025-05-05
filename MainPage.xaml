@@ -3,78 +3,139 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Maui_Birds.MainPage"
+             xmlns:model="clr-namespace:Maui_Birds.Models"
              Shell.NavBarIsVisible="True"
              Title="Meet the flock">
 
-    <ScrollView>
+    <!-- <ScrollView> -->
 
-        <Grid ColumnDefinitions="2*, *, *"
+        <Grid 
+            ColumnDefinitions="3*, *, *, *"
+            RowDefinitions="*,*,*,*"
             Padding="20">
             
-            <Image 
-                Source="{Binding CurrentBirdImage}"
-                Aspect="AspectFit"
-
-                VerticalOptions="Start"
-                HorizontalOptions="Center"
-                Margin="0, 200, 0, 0"
+            <Border Grid.Column="0"
+                    Grid.RowSpan="4"
+                    Margin="100, 0, 100, 0"
+                    Stroke="White"
+                    StrokeThickness="4"
+                    StrokeShape="RoundRectangle 20"
+                    BackgroundColor="White"
+                    >
                 
-                Grid.Column="0"
-                />
+                    <VerticalStackLayout WidthRequest="500" VerticalOptions="Center">
+                        
+                        <Border
+                            StrokeThickness="0"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 20"
+                            Margin="0,50"
+                            HeightRequest="500"
+                            WidthRequest="500">
+
+                            <Image 
+                                Source="{Binding CurrentBirdImage}"
+                                Aspect="AspectFill"
+                            />
+                        </Border>
+                        
+                        <Label
+                            Text="{Binding CurrentBirdName}"
+                            FontSize="40"
+                            Margin="0, 0, 0, 20"
+                            TextColor="Black"
+                        />
+
+                        <Label
+                            x:Name="BirdSightingsLabel"
+                            Text="{Binding CurrentBirdSightings, StringFormat='Sightings:   {0}'}"
+                            FontSize="30"
+                            Margin="0, 0, 0, 50"
+                            IsVisible="False"
+                            TextColor="Black"
+                        />
+
+                        <Label
+                            x:Name="BirdImageCreditLabel"
+                            Text="{Binding ImageCredit, StringFormat='Image Credit:   {0}'}"
+                            FontSize="24"
+                            Margin="0, 0, 0, 10"
+                            IsVisible="False"
+                            TextColor="Black"
+                        />
+
+                        <Label
+                            x:Name="BirdSongCreditLabel"
+                            Text="{Binding SongCredit, StringFormat='Song Credit:   {0}'}"
+                            FontSize="24"
+                            Margin="0, 0, 0, 10"
+                            IsVisible="False"
+                            TextColor="Black"
+                        />
+                        
+                    </VerticalStackLayout>
                 
-            <VerticalStackLayout 
-                Grid.Column="1" 
-                HorizontalOptions="Start"
-                VerticalOptions="Start"
-                Margin="20, 200, 0, 0"
+            </Border>
+            
+            
                 
-                >
-                <Label
-                    Text="{Binding CurrentBirdName}"
-                    FontSize="40"
-                    Grid.Column="1"
-                    Margin="0, 0, 0, 20"
-                    />
 
-                <Label
-                    x:Name="BirdSightingsLabel"
-                    Text="{Binding CurrentBirdSightings, StringFormat='Sightings:   {0}'}"
-                    FontSize="30"
-                    Grid.Column="1"
-                    Margin="0, 0, 0, 80"
-                    IsVisible="False"
-                    />
-
-                <Label
-                    x:Name="BirdImageCreditLabel"
-                    Text="{Binding ImageCredit, StringFormat='Image Credit:   {0}'}"
-                    FontSize="24"
-                    Grid.Column="1"
-                    Margin="0, 0, 0, 10"
-                    IsVisible="False"
-                    />
-
-                <Label
-                    x:Name="BirdSongCreditLabel"
-                    Text="{Binding SongCredit, StringFormat='Song Credit:   {0}'}"
-                    FontSize="24"
-                    Grid.Column="1"
-                    Margin="0, 0, 0, 10"
-                    IsVisible="False"
-                    />
-
-            </VerticalStackLayout>
             
 
             <CollectionView
-                ItemsSource="{Binding BirdImages}"
+                ItemsSource="{Binding SelectedBirds}"
                 ItemsLayout="VerticalGrid, 4"
-                Grid.Column="2"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="4"
                 >
 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Image Source="{Binding .}" HeightRequest="100" WidthRequest="100" Margin="0" />
+                    <DataTemplate x:DataType="model:Bird">
+                        
+                        <Border
+                                Stroke="White"
+                                StrokeThickness="4"
+                                StrokeShape="RoundRectangle 20"
+                                BackgroundColor="White"
+                                HeightRequest="350"
+                                Margin="10, 10, 40,10 "
+                                >
+                            
+                                <VerticalStackLayout>
+                                    
+                                    <Border
+                                        StrokeThickness="0"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 20"
+                                        HeightRequest="250"
+                                        BackgroundColor="Aqua">
+            
+                                        <Image 
+                                            Source="{Binding ImageFilename}"
+                                            Aspect="AspectFill"
+                                        />
+                                    </Border>
+                                    
+                                    <Label
+                                        Text="{Binding CommonName}"
+                                        FontSize="18"
+                                        FontAttributes="Bold"
+                                        Margin="0, 15"
+                                        TextColor="Black"
+                                    />
+            
+                                    <Label
+                                        Text="{Binding Sightings, StringFormat='Sightings:   {0}'}"
+                                        FontSize="14"
+                                        TextColor="Black"
+                                    />
+                                    
+                                </VerticalStackLayout>
+                            
+                        </Border>
+                        
+                        
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
                 
@@ -89,7 +150,7 @@
 
         </Grid>
 
-    </ScrollView>
+    <!-- </ScrollView> -->
 
 </ContentPage>
 
