@@ -10,46 +10,67 @@
         ColumnDefinitions="*,*,*"
         RowDefinitions="*,*,*,*,*,*">
 
+        <Border 
+            x:Name="TeamABoard" 
+            BackgroundColor="White"
+            Stroke="White"
+            StrokeThickness="15"
+            StrokeShape="RoundRectangle 20"
+            Margin="40, 40, 0,40 "
+            Grid.Column="0" Grid.Row="0" Grid.RowSpan="6">
+
+            <Grid RowDefinitions="*,*,*,*,*">
+
+                <Label 
+                    x:Name="TeamALabel"
+                    Grid.Column="0" 
+                    Grid.Row="0"
+                    Margin="0,40,0,0"
+                    TextColor="Black"
+                    Text="Team A"
+                    FontSize="40"
+                    Style="{StaticResource FortunesTeamLabelStyle}" />
+
+                <Image 
+                    x:Name="TeamAWrong1"
+                    Grid.Column="0" 
+                    Grid.Row="1"
+                    Style="{StaticResource FortunesWrongAnswerImageStyle}" />
+
+                <Image 
+                    x:Name="TeamAWrong2"
+                    Grid.Column="0" 
+                    Grid.Row="2"
+                    Style="{StaticResource FortunesWrongAnswerImageStyle}" />
+
+                <Image 
+                    x:Name="TeamAWrong3"
+                    Grid.Column="0" 
+                    Grid.Row="3"
+                    Style="{StaticResource FortunesWrongAnswerImageStyle}" />
+
+                <Label 
+                    x:Name="TeamAScore"
+                    Text="0"
+                    Style="{StaticResource FortunesScoreLabelStyle}"
+                    Grid.Column="0" 
+                    FontSize="32"
+                    Grid.Row="4" 
+                    TextColor="Black"
+                    />
 
 
-        <Label 
-            x:Name="TeamALabel"
-            Grid.Column="0" 
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Text="Team A"
-            Style="{StaticResource FortunesTeamLabelStyle}" />
+            </Grid>
 
-        <Image 
-            x:Name="TeamAWrong1"
-            Grid.Column="0" 
-            Grid.Row="2"
-            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
+        </Border>
 
-        <Image 
-            x:Name="TeamAWrong2"
-            Grid.Column="0" 
-            Grid.Row="3"
-            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
-
-        <Image 
-            x:Name="TeamAWrong3"
-            Grid.Column="0" 
-            Grid.Row="4"
-            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
-
-        <Label 
-            x:Name="TeamAScore"
-            Text="0"
-            Style="{StaticResource FortunesScoreLabelStyle}"
-            Grid.Column="0" 
-            Grid.Row="5" />
+        
 
     
 
         <Grid
             RowDefinitions="*,*,*,*,*"
-            ColumnDefinitions="*,*"
+            ColumnDefinitions="*,250"
             x:Name="AnswerGrid"
             Grid.Column="1" 
             Grid.Row="1"
@@ -61,6 +82,7 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Text="XXXXXXX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -69,6 +91,7 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 Text="XX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -77,6 +100,7 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Text="XXXXXXX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -85,6 +109,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Text="XX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -93,6 +118,7 @@
                 Grid.Row="2"
                 Grid.Column="0"
                 Text="XXXXXXX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -101,6 +127,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 Text="XX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -109,6 +136,7 @@
                 Grid.Row="3"
                 Grid.Column="0"
                 Text="XXXXXXX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -117,6 +145,7 @@
                 Grid.Row="3"
                 Grid.Column="1"
                 Text="XX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -125,6 +154,7 @@
                 Grid.Row="4"
                 Grid.Column="0"
                 Text="XXXXXXX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
 
@@ -133,48 +163,57 @@
                 Grid.Row="4"
                 Grid.Column="1" 
                 Text="XX"
+                FontSize="48"
                 Style="{StaticResource FortunesAnswerLabelStyle}"
                 />
         </Grid>
 
 
+        <Border 
+            x:Name="TeamBBoard"
+            BackgroundColor="White"
+            Stroke="White"
+            StrokeThickness="15"
+            StrokeShape="RoundRectangle 20"
+            Margin="0, 40, 40,40 "
+            Grid.Column="2" Grid.Row="0" Grid.RowSpan="6">
 
+            <Grid RowDefinitions="*,*,*,*,*">
 
-        <Label 
-            x:Name="TeamBLabel"
-            Grid.Column="2" 
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Text="Team B"
-            Style="{StaticResource FortunesTeamLabelStyle}" />
+                <Label 
+                    x:Name="TeamBLabel"
+                    Grid.Row="0"
+                    Margin="0,40,0,0"
+                    Text="Team B"
+                    TextColor="Black"
+                    FontSize="40"
+                    Style="{StaticResource FortunesTeamLabelStyle}" />
+        
+                <Image 
+                    x:Name="TeamBWrong1" 
+                    Grid.Row="1"
+                    Style="{StaticResource FortunesWrongAnswerImageStyle}" />
+        
+                <Image 
+                    x:Name="TeamBWrong2"
+                    Grid.Row="2"
+                    Style="{StaticResource FortunesWrongAnswerImageStyle}" />
+        
+                <Image 
+                    x:Name="TeamBWrong3"
+                    Grid.Row="3"
+                    Style="{StaticResource FortunesWrongAnswerImageStyle}" />
+        
+                <Label 
+                    x:Name="TeamBScore"
+                    Text="0"
+                    Grid.Row="4"
+                    FontSize="32"
+                    TextColor="Black"
+                    Style="{StaticResource FortunesScoreLabelStyle}" />
 
-        <Image 
-            x:Name="TeamBWrong1"
-            Grid.Column="2" 
-            Grid.Row="2"
-            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
-
-        <Image 
-            x:Name="TeamBWrong2"
-            Grid.Column="2" 
-            Grid.Row="3"
-            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
-
-        <Image 
-            x:Name="TeamBWrong3"
-            Grid.Column="2" 
-            Grid.Row="4"
-            Style="{StaticResource FortunesWrongAnswerImageStyle}" />
-
-        <Label 
-            x:Name="TeamBScore"
-            Text="0"
-            Grid.Column="2" 
-            Grid.Row="5"
-            Style="{StaticResource FortunesScoreLabelStyle}" />
-
-
-
+            </Grid>
+        </Border>
 
 
 

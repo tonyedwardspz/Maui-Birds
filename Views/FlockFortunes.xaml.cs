@@ -234,7 +234,9 @@ public partial class FlockFortunes : ContentPage
 		Debug.WriteLine("Current team: " + CurrentTeam);
 
 		var activeTeamLabel = this.FindByName<Label>($"Team{CurrentTeam}Label");
+		var activeTeamBoard = this.FindByName<Border>($"Team{CurrentTeam}Board");
 		var inactiveTeamLabel = this.FindByName<Label>($"Team{currentTeam}Label");
+		var inactiveTeamBoard = this.FindByName<Border>($"Team{currentTeam}Board");
 
 		MainThread.BeginInvokeOnMainThread(() =>
 		{
@@ -242,6 +244,8 @@ public partial class FlockFortunes : ContentPage
 			activeTeamLabel.FontAttributes = FontAttributes.Bold;
 			inactiveTeamLabel.TextDecorations = TextDecorations.None;
 			inactiveTeamLabel.FontAttributes = FontAttributes.None;
+			activeTeamBoard.Stroke = Colors.Aqua;
+			inactiveTeamBoard.Stroke = Colors.White;
 		});
 	}
 
