@@ -9,6 +9,8 @@ namespace Maui_Birds;
 
 public partial class MainPage : ContentPage, INotifyPropertyChanged
 {
+
+	public Bird CurrentBird { get; set; }
 	private ImageSource _currentBirdImage;
 	public ImageSource CurrentBirdImage
 	{
@@ -141,9 +143,9 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		Debug.WriteLine($"Note from main page: {note}, Velocity: {velocity}");
 		var bird = Birds.FirstOrDefault(b => b.Id == note);
 
-		if (CurrentBirdImage != null){
+		if (CurrentBird != null){
 
-			SelectedBirds.Insert(0, bird);
+			SelectedBirds.Insert(0, CurrentBird);
 			var tempBirds = SelectedBirds.ToList();
 			SelectedBirds = new List<Bird>(tempBirds);
 			OnPropertyChanged(nameof(SelectedBirds));
@@ -163,6 +165,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 				Debug.WriteLine($"Error showing labels: {ex.Message}");
 			}
 		}
+
+		CurrentBird = bird;
 
 		try
 		{
