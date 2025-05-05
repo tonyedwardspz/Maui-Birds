@@ -170,6 +170,7 @@ public partial class PlayYourBirdsRight : ContentPage
         {
 			Debug.WriteLine("Incorrect Guess");
 			_hasSelected = false;
+
 			SwapTeams();
 			return;
 		}
@@ -190,6 +191,8 @@ public partial class PlayYourBirdsRight : ContentPage
 	private void SwapTeams(){
 		var index = CurrentTeam == "A" ? TeamABirds.Count - 1 : TeamBBirds.Count - 1;
 		var previousBirdBox = $"Team{CurrentTeam}Bird{index}";
+		var birdBoxBackground = $"Team{CurrentTeam}Bird{index}Background";
+			var birdBoxBorder = $"Team{CurrentTeam}Bird{index}Border";
 
 		// remove the last item from the current teams bird collection
 		if (CurrentTeam == "A")
@@ -202,6 +205,8 @@ public partial class PlayYourBirdsRight : ContentPage
 			this.FindByName<Image>(previousBirdBox + "Image").Source = "";
 			this.FindByName<Label>(previousBirdBox + "NameLabel").Text = "";
 			this.FindByName<Label>(previousBirdBox + "SightingsLabel").Text = "";
+			this.FindByName<Image>(birdBoxBackground).Source = "card_background.png";
+			this.FindByName<Border>(birdBoxBorder).BackgroundColor = Colors.Transparent;
 		});
 
 		CurrentTeam = CurrentTeam == "A" ? "B" : "A";
@@ -232,7 +237,8 @@ public partial class PlayYourBirdsRight : ContentPage
 			if (index < 0) index = 0;
 			
 			var birdBox = $"Team{CurrentTeam}Bird{index}";
-
+			var birdBoxBackground = $"Team{CurrentTeam}Bird{index}Background";
+			var birdBoxBorder = $"Team{CurrentTeam}Bird{index}Border";
 			if (CurrentTeam == "A")
 				TeamABirds.Add(bird);
 			else
@@ -241,6 +247,8 @@ public partial class PlayYourBirdsRight : ContentPage
 			MainThread.BeginInvokeOnMainThread(() =>
 			{
 				this.FindByName<Image>(birdBox + "Image").Source = bird.ImageFilename;
+				this.FindByName<Image>(birdBoxBackground).Source = "";
+				this.FindByName<Border>(birdBoxBorder).BackgroundColor = Colors.White;
 				if (bird.CommonName != null) this.FindByName<Label>(birdBox + "NameLabel").Text = bird.CommonName;
 
 				if (index <= 0)
