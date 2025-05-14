@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Maui_Birds;
 using CommunityToolkit.Maui.Views;
 
 namespace Maui_Birds.Views;
 
 public partial class WheelOfFeathersView : ContentPage
 {
+    private readonly Wheel wheel;
     private string currentPhrase;
     private List<char> guessedLetters;
     private int currentPlayer;
@@ -26,6 +29,11 @@ public partial class WheelOfFeathersView : ContentPage
     {
         InitializeComponent();
         BindingContext = this;
+
+        wheel = new Wheel(this);
+        WheelView.Drawable = wheel;
+
+        wheel.Finished += WheelOnFinished;
     }
 
     private void SetFocusOnLetterEntry()
@@ -176,10 +184,35 @@ public partial class WheelOfFeathersView : ContentPage
     {
         PlaySoundEffect("puzzle_reveal");
         StartNewGame();
+        
+        this.wheel.UpdateNames();
+        this.Invalidate();
     }
 
     private void OnLetterEntryCompleted(object sender, EventArgs e)
     {
         OnGuessButtonClicked(sender, e);
+    }
+
+    private async void WheelOnFinished(string obj)
+    {
+        await DisplayAlert("And the winner is", obj, "OK");
+    }
+
+    private void Wheel_OnStartInteraction(object? sender, TouchEventArgs e)
+    {
+        Debug.WriteLine("Spinning wheel. . . ");
+        wheel.Spin();
+    }
+
+    internal void Invalidate()
+    {
+        this.WheelView.Invalidate();
+    }
+
+    private void NamesEditor_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        this.wheel.UpdateNames();
+        this.Invalidate();
     }
 }

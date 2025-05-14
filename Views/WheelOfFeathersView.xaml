@@ -7,9 +7,10 @@
              x:Class="Maui_Birds.Views.WheelOfFeathersView"
              Title="Wheel of Feathers">
     <ContentPage.Content>
-        <VerticalStackLayout Spacing="20" Padding="20" WidthRequest="500">
+        <Grid ColumnDefinitions="*, *">
+        <VerticalStackLayout Spacing="20" Padding="20" WidthRequest="500" Grid.Column="0">
             
-            <!-- Player Turn Indicator -->
+
             <Border BackgroundColor="DodgerBlue" 
                    Padding="10" 
                    HorizontalOptions="Center">
@@ -18,7 +19,7 @@
                        FontSize="20"/>
             </Border>
 
-            <!-- Hidden Phrase Grid -->
+
             <Grid x:Name="PhraseGrid" 
                   Row="1"
                   ColumnSpacing="5" 
@@ -28,7 +29,7 @@
                   HeightRequest="400">
             </Grid>
 
-            <!-- Letter Input Section -->
+
             <Border BackgroundColor="DodgerBlue" 
                    Padding="15" 
                    HorizontalOptions="Center"
@@ -49,8 +50,7 @@
                             HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
-
-            <!-- New Game Button -->
+            
             <Button Text="New Game" 
                     Clicked="OnNewGameButtonClicked" 
                     HorizontalOptions="Center" 
@@ -64,6 +64,18 @@
                 WidthRequest="1"
                 Volume="1"/>
         </VerticalStackLayout>
+
+        <Grid Grid.Column="1">
+            <GraphicsView 
+                Grid.Row="1"
+                x:Name="WheelView"
+                StartInteraction="Wheel_OnStartInteraction"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+            />
+        </Grid>
+
+        </Grid>
         
     </ContentPage.Content>
 </ContentPage>

@@ -10,14 +10,14 @@
 
     <Grid RowDefinitions="100, *, 100, *"
           ColumnDefinitions="*, *, *, *, *">
-        <Label 
-            x:Name="TeamALabel"
-            Text="Team A" 
-            Grid.Row="0" 
-            Grid.Column="0" 
-            Grid.ColumnSpan="5" 
-            FontSize="38"
-            Margin="10" />
+           <Label 
+                   x:Name="TeamALabel"
+                   Text="Team A" 
+                   Grid.Row="0" 
+                   Grid.Column="0" 
+                   Grid.ColumnSpan="5" 
+                   FontSize="38"
+                   Margin="10" />
 
         
        <Border
