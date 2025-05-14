@@ -4,6 +4,8 @@ using Maui_Birds.Views;
 
 namespace Maui_Birds;
 
+// Thanks to Shaun Lawrence for this code. It worked perfectly when he passed it over :)
+// https://github.com/bijington/wheel-of-names
 public class Wheel : IDrawable
 {
     private readonly WheelOfFeathersView mainPage;
@@ -88,7 +90,7 @@ public class Wheel : IDrawable
         Animation animation = new Animation();
 
         var finalAngle = RandomNumberGenerator.GetInt32(0, 360);
-        var numberOfSpins = RandomNumberGenerator.GetInt32(3, 7);
+        var numberOfSpins = RandomNumberGenerator.GetInt32(2, 5);
 
         animation.Add(
             0.0,

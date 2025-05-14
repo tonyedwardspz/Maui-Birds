@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Maui_Birds;
 using CommunityToolkit.Maui.Views;
+using Maui_Birds.Models;
+using Maui_Birds.Services;
 
 namespace Maui_Birds.Views;
 
@@ -15,6 +11,20 @@ public partial class WheelOfFeathersView : ContentPage
     private string currentPhrase;
     private List<char> guessedLetters;
     private int currentPlayer;
+    private readonly BirdSearchService _birdSearchService;
+    private bool isSpinning = false;
+
+    private List<Bird>? _birds;
+	public List<Bird>? Birds
+	{
+		get => _birds;
+		set
+		{
+			_birds = value;
+			OnPropertyChanged(nameof(Birds));
+		}
+	}
+    private Bird? randomBird;
     private readonly string[] phrases = new[]
     {
         "A BIRD IN THE HAND",
@@ -34,6 +44,11 @@ public partial class WheelOfFeathersView : ContentPage
         WheelView.Drawable = wheel;
 
         wheel.Finished += WheelOnFinished;
+
+        _birdSearchService = BirdSearchService.Instance;
+
+        Birds = _birdSearchService.AllBirds;
+        _ = InitializeMidiAsync();
     }
 
     private void SetFocusOnLetterEntry()
@@ -57,8 +72,54 @@ public partial class WheelOfFeathersView : ContentPage
         SetFocusOnLetterEntry();
     }
 
+    private async Task InitializeMidiAsync()
+	{
+		try
+		{
+			await MidiManager.InitializeAsync();
+			MidiManager.SetMIDICallback((status, data1, data2) =>
+			{
+                if (data1 == 93){
+                    Debug.WriteLine("Reveal Answer");
+                    // StartNewGame();
+                    
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        PlaySoundEffect("puzzle_reveal");
+                        StartNewGame();
+        
+                        this.wheel.UpdateNames();
+                        this.Invalidate();
+                    });
+                    
+                }
+				else if ((status & 0xF0) == 0x90 && isSpinning == false) 
+				{
+                    string name = string.Empty;
+                    if (Birds != null && Birds.Any())
+                    {
+                        var random = new Random();
+                        randomBird = Birds[random.Next(Birds.Count)];
+                    }
+                    PlaySoundEffect(randomBird.CommonName.Replace(" ", "_").ToLower());
+					wheel.Spin();
+                    isSpinning = true;
+                }
+			});
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Error initializing MIDI: {ex.Message}");
+		}
+	}
+
     private void UpdateCurrentPlayerLabel()
     {
+        if (currentPlayer == 3)
+        {
+            CurrentPlayerLabel.Text = "Player nulls's Turn";
+            return;
+        } 
         CurrentPlayerLabel.Text = $"Player {currentPlayer}'s Turn";
     }
 
@@ -100,7 +161,7 @@ public partial class WheelOfFeathersView : ContentPage
                 {
                     Text = guessedLetters.Contains(letter) ? letter.ToString() : "_",
                     FontSize = 42,
-                    WidthRequest = 40,
+                    WidthRequest = 50,
                     HorizontalOptions = LayoutOptions.Center
                 };
 
@@ -180,15 +241,6 @@ public partial class WheelOfFeathersView : ContentPage
         return currentPhrase.All(c => c == ' ' || guessedLetters.Contains(c));
     }
 
-    private void OnNewGameButtonClicked(object sender, EventArgs e)
-    {
-        PlaySoundEffect("puzzle_reveal");
-        StartNewGame();
-        
-        this.wheel.UpdateNames();
-        this.Invalidate();
-    }
-
     private void OnLetterEntryCompleted(object sender, EventArgs e)
     {
         OnGuessButtonClicked(sender, e);
@@ -196,23 +248,13 @@ public partial class WheelOfFeathersView : ContentPage
 
     private async void WheelOnFinished(string obj)
     {
-        await DisplayAlert("And the winner is", obj, "OK");
-    }
-
-    private void Wheel_OnStartInteraction(object? sender, TouchEventArgs e)
-    {
-        Debug.WriteLine("Spinning wheel. . . ");
-        wheel.Spin();
+        MainThread.BeginInvokeOnMainThread(() => AudioPlayer.Stop());
+        await DisplayAlert("You scored ", randomBird.CommonName, "OK");
+        isSpinning = false;
     }
 
     internal void Invalidate()
     {
         this.WheelView.Invalidate();
-    }
-
-    private void NamesEditor_OnTextChanged(object? sender, TextChangedEventArgs e)
-    {
-        this.wheel.UpdateNames();
-        this.Invalidate();
     }
 }

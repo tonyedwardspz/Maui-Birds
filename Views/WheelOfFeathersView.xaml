@@ -8,15 +8,20 @@
              Title="Wheel of Feathers">
     <ContentPage.Content>
         <Grid ColumnDefinitions="*, *">
-        <VerticalStackLayout Spacing="20" Padding="20" WidthRequest="500" Grid.Column="0">
+        <Grid  RowDefinitions="200,*,200">
             
 
             <Border BackgroundColor="DodgerBlue" 
+                    HeightRequest="100"
                    Padding="10" 
-                   HorizontalOptions="Center">
+                   HorizontalOptions="Center"
+                    WidthRequest="300"
+                   Grid.Row="0">
                 <Label x:Name="CurrentPlayerLabel" 
                        Text="Player 1's Turn" 
-                       FontSize="20"/>
+                       FontSize="30"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
             </Border>
 
 
@@ -31,14 +36,17 @@
 
 
             <Border BackgroundColor="DodgerBlue" 
+                Grid.Row="2"
                    Padding="15" 
                    HorizontalOptions="Center"
-                   Margin="0,50,0,0">
-                <VerticalStackLayout Spacing="10" WidthRequest="300">
-                    <Label Text="Enter a letter:" 
-                           FontSize="16"/>
+                VerticalOptions="Center"
+                   Margin="0,0,0,0">
+                <VerticalStackLayout Spacing="10" WidthRequest="300" HorizontalOptions="Center">
+                    <Label Text="Enter a letter:"
+                           HorizontalOptions="Center"
+                           FontSize="20"/>
                     <Entry x:Name="LetterEntry" 
-                           WidthRequest="100" 
+                           WidthRequest="150" 
                            MaxLength="1" 
                            HorizontalOptions="Center" 
                            FontSize="24"
@@ -47,15 +55,13 @@
                            Completed="OnLetterEntryCompleted"/>
                     <Button Text="Guess" 
                             Clicked="OnGuessButtonClicked" 
-                            HorizontalOptions="Center"/>
+                            HorizontalOptions="Center"
+                            FontAttributes="Bold"
+                            FontSize="20"
+                            WidthRequest="100"/>
                 </VerticalStackLayout>
             </Border>
             
-            <Button Text="New Game" 
-                    Clicked="OnNewGameButtonClicked" 
-                    HorizontalOptions="Center" 
-                    BackgroundColor="Green" 
-                    TextColor="White"/>
             
             <toolkit:MediaElement
                 x:Name="AudioPlayer"
@@ -63,13 +69,12 @@
                 HeightRequest="1"
                 WidthRequest="1"
                 Volume="1"/>
-        </VerticalStackLayout>
+        </Grid>
 
         <Grid Grid.Column="1">
             <GraphicsView 
                 Grid.Row="1"
                 x:Name="WheelView"
-                StartInteraction="Wheel_OnStartInteraction"
                 HorizontalOptions="Fill"
                 VerticalOptions="Fill"
             />
